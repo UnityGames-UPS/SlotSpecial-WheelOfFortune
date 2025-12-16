@@ -5,8 +5,7 @@ using System;
 using Newtonsoft.Json;
 using Best.SocketIO;
 using Best.SocketIO.Events;
-using Newtonsoft.Json.Linq;
-using UnityEngine.UI;
+
 
 public class SocketIOManager : MonoBehaviour
 {
@@ -391,9 +390,9 @@ public class SocketIOManager : MonoBehaviour
 
     private void PopulateSlotGame()
     {
+        gameManager.StartGame();
         uiManager.InitialiseUIData(initUIData.paylines, initialData.totalLines);
         slotManager.shuffleInitialMatrix();
-        gameManager.StartGame();
 #if UNITY_WEBGL && !UNITY_EDITOR
     JSManager.SendCustomMessage("OnEnter");
 #endif

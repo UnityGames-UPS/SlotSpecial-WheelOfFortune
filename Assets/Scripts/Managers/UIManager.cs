@@ -3,12 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using UnityEngine.UI;
-using System.Linq;
 using TMPro;
 using System;
-using UnityEngine.Networking;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+
 
 public class UIManager : MonoBehaviour
 {
@@ -88,6 +85,7 @@ public class UIManager : MonoBehaviour
     internal GameObject ActivePopup = null;
     [SerializeField] private SocketIOManager socketManager;
     [SerializeField] private AudioController audioController;
+    [SerializeField] private GameManager gameManager;
     internal Action PlayButtonAudio;
 
     internal Action<float, string> ToggleAudio;
@@ -202,7 +200,8 @@ public class UIManager : MonoBehaviour
             }
             string text = "";
 
-            text += "<color=#ffa500ff>3X </color>- " + paylines.symbols[i].multiplier[0] + "x";
+            text += "<color=#ffa500ff>3X </color>- " + (paylines.symbols[i].multiplier[0] * gameManager.currentTotalBet).ToString("N2");
+            //+ "x";
             if (SymbolsText[i]) SymbolsText[i].text = text;
         }
 

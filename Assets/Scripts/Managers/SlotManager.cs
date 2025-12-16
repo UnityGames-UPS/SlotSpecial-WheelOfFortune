@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using UnityEngine.UI;
-using System.Linq;
 using TMPro;
 using System;
 using UnityEngine.UI.Extensions;
 using Newtonsoft.Json;
-using UnityEngine.Rendering;
-using System.Net.Sockets;
+
 public class SlotManager : MonoBehaviour
 {
 

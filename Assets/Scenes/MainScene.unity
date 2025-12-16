@@ -4073,6 +4073,7 @@ MonoBehaviour:
   LeftBtn: {fileID: 1563929046}
   socketManager: {fileID: 500036492}
   audioController: {fileID: 4884499504835516836}
+  gameManager: {fileID: 1278492944}
 --- !u!1 &379363302
 GameObject:
   m_ObjectHideFlags: 0
@@ -5810,7 +5811,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c6dee67c9fb64b7bbed44da112a7af7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TestToken: 28ece189ac93458d9c429a3a751482e6
+  TestToken: cc8a41ca415546de9ba6acb919a84038
   JSManager: {fileID: 1674023574}
   slotManager: {fileID: 2046803210}
   gameManager: {fileID: 1278492944}
@@ -6374,7 +6375,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0.2901961, g: 0, b: 0, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -16771,7 +16772,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotManager: {fileID: 2046803210}
   socketManager: {fileID: 500036492}
-  uIManager: {fileID: 377874625}
+  uiManager: {fileID: 377874625}
   bonusManager: {fileID: 804008365}
   audioController: {fileID: 4884499504835516836}
   SlotStart_Button: {fileID: 567733206}
