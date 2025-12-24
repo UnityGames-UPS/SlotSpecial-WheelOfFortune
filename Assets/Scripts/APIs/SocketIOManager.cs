@@ -570,13 +570,13 @@ public class WheelBonus
 [Serializable]
 public class GoldSpinBonus
 {
-    public bool isTriggered { get; set; }
-    public string awardType { get; set; }
-    public int baseAwardValue { get; set; }
-    public int totalWinAmount { get; set; }
-    public SymbolPosition symbolPosition { get; set; }
-    public int wheelStopIndex { get; set; }
-    public int awardValue { get; set; }
+    public bool isTriggered;
+    public string awardType;
+    public int baseAwardValue;
+    public int totalWinAmount;
+    public SymbolPosition symbolPosition;
+    public int wheelStopIndex;
+    public int awardValue;
 
 }
 

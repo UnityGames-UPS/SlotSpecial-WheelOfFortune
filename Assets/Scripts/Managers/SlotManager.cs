@@ -34,6 +34,7 @@ public class SlotManager : MonoBehaviour
     [SerializeField] private Sprite[] subDoubleSeven_Sprite;
     [SerializeField] private Sprite[] subSeven_Sprite;
     [SerializeField] private Sprite[] wheelofFortuneTripleSeven_Sprite;
+    [SerializeField] private Sprite[] wheelofFortuneTripleSeven_;
     [SerializeField] private Sprite[] wheelofFortuneSpin_Sprite;
     [SerializeField] private Sprite[] goldSpin_Sprite;
 

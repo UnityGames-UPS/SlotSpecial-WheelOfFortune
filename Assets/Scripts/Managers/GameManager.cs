@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -22,7 +23,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Button StopSpin_Button;
     private bool IsSpinning = false;
     private bool IsAutoSpin = false;
-
+    [Header("wheel")]
+    [SerializeField] private GameObject goldenWheelPanel;
+    [SerializeField] private WheelView goldenWheel;
+    [SerializeField] private GameObject goldWinPanel;
+    [SerializeField] private TMP_Text goldWinPanelText;
     internal bool turboMode;
 
     [SerializeField] private GameObject turboAnim;
@@ -242,7 +247,20 @@ public class GameManager : MonoBehaviour
                 audioController.playBgAudio();
 
             }
-
+            else if (socketManager.resultData.payload.goldSpinBonus.isTriggered)
+            {
+                goldenWheel.PopulateValues(socketManager.features.goldSpin);
+                goldenWheelPanel.SetActive(true);
+                yield return new WaitForSeconds(2f);
+                goldenWheel.targetIndex = socketManager.resultData.payload.goldSpinBonus.wheelStopIndex;
+                StartCoroutine(goldenWheel.StopWheel());
+                yield return new WaitForSeconds(6f);
+                goldWinPanelText.text = socketManager.resultData.payload.goldSpinBonus.baseAwardValue.ToString();
+                goldWinPanel.SetActive(true);
+                yield return new WaitForSeconds(3f);
+                goldWinPanel.SetActive(false);
+                goldenWheelPanel.SetActive(false);
+            }
             else if (socketManager.resultData.payload.totalWin > 0)
             {
                 int wintype = CheckWinPopups(socketManager.resultData.payload.totalWin);
