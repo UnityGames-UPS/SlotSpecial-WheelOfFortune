@@ -324,7 +324,7 @@ public class UIManager : MonoBehaviour
         }
 
     }
-        internal void ReconnectionPopup()
+    internal void ReconnectionPopup()
     {
         OpenPopup(ReconnectPopup_Object);
     }
@@ -341,7 +341,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-       private void CloseConnectionPopup(GameObject Popup)
+    private void CloseConnectionPopup(GameObject Popup)
     {
         if (audioController) audioController.PlayButtonAudio();
         if (Popup) Popup.SetActive(false);

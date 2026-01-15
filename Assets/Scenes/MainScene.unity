@@ -6664,7 +6664,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c6dee67c9fb64b7bbed44da112a7af7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TestToken: 6abbcbfac3104126b5f414e571e2f067
+  TestToken: bfd3ec065d714599bfc9944701c1c43a
   JSManager: {fileID: 1674023574}
   slotManager: {fileID: 2046803210}
   gameManager: {fileID: 1278492944}

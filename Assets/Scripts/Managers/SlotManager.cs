@@ -458,27 +458,28 @@ public class SlotManager : MonoBehaviour
 
             GeneratePayline(paylines[lineIndex]);
 
-            HighlightWinningSymbols(win.positions);
+            // HighlightWinningSymbols(win.positions);
+            HighlightWinningSymbols(paylines[lineIndex], win.positions);
         }
     }
 
-    internal void ProcessPointsAnimations(List<WinningLine> winningLines)
-    {
-        foreach (var win in winningLines)
-        {
-            HighlightWinningSymbols(win.positions);
-        }
-    }
+    // internal void ProcessPointsAnimations(List<WinningLine> winningLines)
+    // {
+    //     foreach (var win in winningLines)
+    //     {
+    //         HighlightWinningSymbols(win.positions);
+    //     }
+    // }
 
-    private void HighlightWinningSymbols(List<int> positions)
+    private void HighlightWinningSymbols(List<int> lines, List<int> positions)
     {
         for (int reel = 0; reel < positions.Count; reel++)
         {
-            int row = positions[reel];
+            int row = lines[reel];
 
             if (reel < slotmatrix.Count && row < slotmatrix[reel].slotImages.Count)
             {
-                StartGameAnimation(slotmatrix[reel].slotImages[row].gameObject);
+                StartGameAnimation(slotmatrix[row].slotImages[reel].gameObject);
             }
         }
     }
