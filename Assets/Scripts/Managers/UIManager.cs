@@ -51,6 +51,7 @@ public class UIManager : MonoBehaviour
     [Header("disconnection popup")]
     // [SerializeField] private Button CloseDisconnect_Button;
     [SerializeField] private GameObject DisconnectPopup_Object;
+    [SerializeField] private Button DisconnectCloseButton;
 
     [Header("Re-connection popup")]
     // [SerializeField] private Button CloseDisconnect_Button;
@@ -92,7 +93,7 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
-
+        SetButton(DisconnectCloseButton, CallOnExitFunction);
         SetButton(yes_Button, CallOnExitFunction);
         SetButton(no_Button, () => ClosePopup());
         SetButton(GameExit_Button, () => OpenPopup(quitPopupObject));

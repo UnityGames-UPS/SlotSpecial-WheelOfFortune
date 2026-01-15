@@ -49,7 +49,7 @@ public class SocketIOManager : MonoBehaviour
     private float pingInterval = 2f;     //
     private bool waitingForPong = false;     //
     private int missedPongs = 0;            // 
-    private const int MaxMissedPongs = 5;       //
+    private const int MaxMissedPongs = 15;       //
     private Coroutine PingRoutine; //Back2 end       //
 
     private void Awake()

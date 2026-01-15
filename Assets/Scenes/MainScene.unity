@@ -4740,6 +4740,7 @@ MonoBehaviour:
   LowBalancePopup_Object: {fileID: 379363302}
   Close_Button: {fileID: 227746489}
   DisconnectPopup_Object: {fileID: 1808776917}
+  DisconnectCloseButton: {fileID: 657710938}
   ReconnectPopup_Object: {fileID: 1420493784}
   quitPopupObject: {fileID: 1716677960}
   yes_Button: {fileID: 1355622713}
@@ -9592,7 +9593,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &657710935
 RectTransform:
   m_ObjectHideFlags: 0
