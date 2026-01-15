@@ -27,7 +27,8 @@ public class SocketIOManager : MonoBehaviour
     private Socket gameSocket; //BackendChanges
     protected string nameSpace = "playground"; //BackendChanges
     protected string SocketURI = null;
-    protected string TestSocketURI = "http://localhost:5000";
+    // protected string TestSocketURI = "http://localhost:5000";
+    protected string TestSocketURI = "https://devrealtime.dingdinghouse.com"; 
     // protected string TestSocketURI = "https://devrealtime.dingdinghouse.com";
     protected string gameID = "SL-WOF";
     private SocketManager manager;
