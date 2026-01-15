@@ -224,7 +224,7 @@ public class GameManager : MonoBehaviour
             slotManager.ProcessPayoutLines(socketManager.resultData.payload.winningLines);
             // TODO: WF enable animation
 
-            slotManager.ProcessPointsAnimations(socketManager.resultData.payload.winningLines);
+            //   slotManager.ProcessPointsAnimations(socketManager.resultData.payload.winningLines);
 
             if (socketManager.resultData.payload.wheelBonus.isTriggered)
             {

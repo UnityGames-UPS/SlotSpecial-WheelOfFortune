@@ -28,6 +28,7 @@ public class SocketIOManager : MonoBehaviour
     protected string nameSpace = "playground"; //BackendChanges
     protected string SocketURI = null;
     protected string TestSocketURI = "http://localhost:5000";
+    // protected string TestSocketURI = "https://devrealtime.dingdinghouse.com";
     protected string gameID = "SL-WOF";
     private SocketManager manager;
 
@@ -573,7 +574,7 @@ public class GoldSpinBonus
     public bool isTriggered;
     public string awardType;
     public int baseAwardValue;
-    public int totalWinAmount;
+    public double totalWinAmount;
     public SymbolPosition symbolPosition;
     public int wheelStopIndex;
     public int awardValue;
