@@ -9,5 +9,8 @@ on:
 jobs:
   call-reusable:
     uses: UnityGames-UPS/unity-build-pipeline/.github/workflows/main.yml@main
-    with:
+    with:  
+      s3_bucket: unity.build-dev
       s3_folder: dev/SL-WOF
+      cloudfront_distribution_id: ERDVMYSDM278F
+      invalidate_paths: "/SL-WOF/*"
