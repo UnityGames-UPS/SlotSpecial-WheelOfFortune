@@ -5,6 +5,7 @@ using DG.Tweening;
 using UnityEngine.UI;
 using TMPro;
 using System;
+using System.Linq;
 
 
 public class UIManager : MonoBehaviour
@@ -26,6 +27,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Button Paytable_Button;
     [SerializeField] private GameObject Paytable_Object;
     [SerializeField] private TMP_Text WinText;
+    [SerializeField] internal TMP_Text JackpotText;
 
 
     [Header("Settings Popup")]
@@ -176,64 +178,14 @@ public class UIManager : MonoBehaviour
 
     internal void InitialiseUIData(Paylines paylines, int linescount)
     {
-        // for (int i = 0; i < 5; i++)
-        // {
-        //     string text = "";
-        //     text += "<color=#ffa500ff>3X </color>- " + paylines.symbols[i + 1].multiplier + "x";
-        //     if (SymbolsText[i]) SymbolsText[i].text = text;
-        // }
-
-        // for (int i = 6; i < 11; i++)
-        // {
-        //     string text = "";
-
-        //     text += "<color=#ffa500ff>3X </color>- " + paylines.symbols[i].multiplier + "x";
-
-
-        //     if (SymbolsTripleText[i - 6]) SymbolsTripleText[i - 6].text = text;
-        // }
-
-        for (int i = 0; i < 12; i++)
+        for (int i = 0; i < SymbolsText.Length; i++)
         {
-            if (i == 0 || i == 11)
-            {
-                continue;
-            }
-            string text = "";
-
-            text += "<color=#ffa500ff>3X </color>- " + (paylines.symbols[i].multiplier[0] * gameManager.currentTotalBet).ToString("N2");
-            //+ "x";
-            if (SymbolsText[i]) SymbolsText[i].text = text;
+            SymbolsText[i].text = (paylines.symbols[i].payout * socketManager.initialData.bets[gameManager.BetCounter]).ToString();
         }
 
-        // for (int i = 6; i < 11; i++)
-        // {
-        //     string text = "";
-
-        //     text += "<color=#ffa500ff>3X </color>- " + paylines.symbols[i].multiplier + "x";
-
-
-        //     if (SymbolsTripleText[i - 6]) SymbolsTripleText[i - 6].text = text;
-        // }
-
-        // SymbolsText[SymbolsText.Length - 1].text = "<color=#ffa500ff>3X </color>- " + paylines.symbols[11].multiplier.ToString() + "x";
-
-        // AnyComboText.text = "Any <color=#ffa500ff>3X </color>- " + paylines.symbols[13].multiplier.ToString() + "x";
-
-        // SevenComboText.text = paylines.symbols[1].mixedPayout.Type != JTokenType.Object
-        //     ? $"Any <color=#ffa500ff>3X </color>- {paylines.symbols[1].mixedPayout}x"
-        //     : "";
-
-        // BarComboText.text = paylines.symbols[4].mixedPayout.Type != JTokenType.Object
-        //     ? $"Any <color=#ffa500ff>3X </color>- {paylines.symbols[4].mixedPayout}x"
-        //     : "";
-
-        // Bonus_Text.text = paylines.symbols[12].symbolsCount.Type != JTokenType.Object
-        //     ? $"Any <color=#ffa500ff>{paylines.symbols[12].symbolsCount}X </color>- triggers bonus game. \n Tap the spin button to spin the wheel and get exciting reward."
-        //     : "_";
-
-
-        // Rule_Text.text = paylines.symbols[13].description.Type != JTokenType.Object ? paylines.symbols[13].description.ToString() : "";
+        AnyComboText.text = "Any 3x " + socketManager.features.anyPayouts.defaults.ToString();
+        SevenComboText.text = "Any 3x " + socketManager.features.anyPayouts.sevens.ToString();
+        BarComboText.text = "Any 3x " + socketManager.features.anyPayouts.bars.ToString();
 
         WinText.text = $"No of Positions = {linescount * 3} \nWinnings are calculated based on bet per line \nBet per line = Total bet / No of Positions ";
 

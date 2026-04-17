@@ -32,6 +32,7 @@ public class BonusManager : MonoBehaviour
     [SerializeField] private Button Spin_Button;
 
     [SerializeField] private TMP_Text betPerLineText;
+    [SerializeField] internal TMP_Text goldMultiplyertextText;
     internal int targetIndex;
     internal double multipler;
 
@@ -40,7 +41,7 @@ public class BonusManager : MonoBehaviour
     internal Action PlayWinAudio;
     internal Action StopSpinAudio;
     internal Action StopWinAudio;
-
+    internal double finalPayout;
     internal bool isBonusPlaying = false;
     void Start()
     {
@@ -96,7 +97,7 @@ public class BonusManager : MonoBehaviour
             yield break;
 
         PlaySpinAudio?.Invoke();
-        winText.text = socketManager.resultData.payload.wheelBonus.awardValue.ToString("f3");
+        winText.text = finalPayout.ToString("f3");
         yield return new WaitForSeconds(2f);
         rotationTween.timeScale = 0.5f;
         // float targetAngle = targetIndex * degreesPerSegment;
@@ -154,6 +155,7 @@ public class BonusManager : MonoBehaviour
             winPopup.SetActive(false);
             bonusPanel.SetActive(false);
             winText.text = "";
+            goldMultiplyertextText.text = "";
             lightOff.SetActive(true);
             Spin_Button.interactable = true;
             isBonusPlaying = false;

@@ -32,7 +32,7 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private GameObject turboAnim;
     internal bool immediateStop;
-    [SerializeField] private int BetCounter = 0;
+    [SerializeField] internal int BetCounter = 0;
 
     private double currentBalance = 0;
     internal double currentTotalBet = 0;
@@ -101,6 +101,7 @@ public class GameManager : MonoBehaviour
         currentTotalBet = socketManager.initialData.bets[BetCounter] * betMultiplier;
         currentBalance = socketManager.playerData.balance;
         bonusManager.values = socketManager.features.wheelOfFortune.wheelValues;
+        uiManager.JackpotText.text = (socketManager.initialData.bets[BetCounter] * socketManager.features.goldSpin.jackpotValue).ToString();
 
 
         CompareBalance();
@@ -179,6 +180,7 @@ public class GameManager : MonoBehaviour
         currentTotalBet = socketManager.initialData.bets[BetCounter];
 
         slotManager.UpdateBetText(socketManager.initialData.bets[BetCounter]);
+        uiManager.JackpotText.text = (socketManager.initialData.bets[BetCounter] * socketManager.features.goldSpin.jackpotValue).ToString();
         uiManager.InitialiseUIData(socketManager.initUIData.paylines, socketManager.initialData.totalLines);
         CompareBalance();
 
@@ -228,7 +230,7 @@ public class GameManager : MonoBehaviour
 
             if (socketManager.resultData.payload.wheelBonus.isTriggered)
             {
-                float awardValue = socketManager.resultData.payload.wheelBonus.awardValue;
+                bonusManager.finalPayout = socketManager.resultData.payload.wheelBonus.awardValue;
 
                 int foundIndex = 0;
                 // if (bonusManager.values != null && bonusManager.values.Count > 0)
@@ -249,17 +251,36 @@ public class GameManager : MonoBehaviour
             }
             else if (socketManager.resultData.payload.goldSpinBonus.isTriggered)
             {
+                yield return new WaitForSeconds(1f);
                 goldenWheel.PopulateValues(socketManager.features.goldSpin);
                 goldenWheelPanel.SetActive(true);
                 yield return new WaitForSeconds(2f);
                 goldenWheel.targetIndex = socketManager.resultData.payload.goldSpinBonus.wheelStopIndex;
                 StartCoroutine(goldenWheel.StopWheel());
                 yield return new WaitForSeconds(6f);
-                goldWinPanelText.text = socketManager.resultData.payload.goldSpinBonus.baseAwardValue.ToString();
+                if (socketManager.resultData.payload.goldSpinBonus.awardType == "multiplier") goldWinPanelText.text = socketManager.resultData.payload.goldSpinBonus.multiplier.ToString() + "x";
+                else goldWinPanelText.text = socketManager.resultData.payload.goldSpinBonus.totalWinAmount.ToString();
                 goldWinPanel.SetActive(true);
                 yield return new WaitForSeconds(3f);
                 goldWinPanel.SetActive(false);
                 goldenWheelPanel.SetActive(false);
+                if (socketManager.resultData.payload.goldSpinBonus.wheelOfFortuneTriggered)
+                {
+                    bonusManager.finalPayout = socketManager.resultData.payload.goldSpinBonus.wheelOfFortuneSpins.finalAwardValue;
+                    bonusManager.goldMultiplyertextText.text = goldWinPanelText.text;
+
+                    int foundIndex = 0;
+                    bonusManager.targetIndex = socketManager.resultData.payload.goldSpinBonus.wheelOfFortuneSpins.wheelStopIndex;
+                    Debug.Log(foundIndex);
+                    bonusManager.multipler = socketManager.initialData.bets[BetCounter];
+
+                    bonusManager.StartBonus(IsAutoSpin);
+                    audioController.playBgAudio("bonus");
+
+                    yield return new WaitUntil(() => !bonusManager.isBonusPlaying);
+
+                    audioController.playBgAudio();
+                }
             }
             else if (socketManager.resultData.payload.totalWin > 0)
             {
@@ -286,7 +307,26 @@ public class GameManager : MonoBehaviour
         yield return null;
 
     }
+    internal IEnumerator WheelTriggeredinGold()
+    {
+        bonusManager.finalPayout = socketManager.resultData.payload.wheelBonus.awardValue;
 
+        int foundIndex = 0;
+        // if (bonusManager.values != null && bonusManager.values.Count > 0)
+        // {
+        //     foundIndex = bonusManager.values.FindIndex(v => v == awardValue);
+        // }
+        bonusManager.targetIndex = socketManager.resultData.payload.features.wheelOfFortune.wheelStopIndex;
+        Debug.Log(foundIndex);
+        bonusManager.multipler = socketManager.initialData.bets[BetCounter];
+
+        bonusManager.StartBonus(IsAutoSpin);
+        audioController.playBgAudio("bonus");
+
+        yield return new WaitUntil(() => !bonusManager.isBonusPlaying);
+
+        audioController.playBgAudio();
+    }
     private IEnumerator SpinRoutine()
     {
 

@@ -535,7 +535,7 @@ public class Symbol
 {
   public int id { get; set; }
   public string name { get; set; }
-  public List<int> multiplier { get; set; }
+  public int payout { get; set; }
   public string description { get; set; }
   public string group { get; set; }
 }
@@ -562,7 +562,7 @@ public class Payload
 public class WinningLine
 {
   public int lineIndex { get; set; }
-  public List<int> positions { get; set; }
+  public List<List<int>> positions;
   public string symbolId { get; set; }
   public string symbolName { get; set; }
   public float payout { get; set; }
@@ -584,12 +584,14 @@ public class WheelBonus
 public class GoldSpinBonus
 {
   public bool isTriggered;
-  public string awardType;
-  public int baseAwardValue;
-  public double totalWinAmount;
   public SymbolPosition symbolPosition;
   public int wheelStopIndex;
-  public int awardValue;
+  public string awardType;
+  public int baseAwardValue;
+  public int multiplier;
+  public bool wheelOfFortuneTriggered;
+  public WheelOfFortuneSpins wheelOfFortuneSpins;
+  public double totalWinAmount;
 
 }
 
@@ -606,8 +608,14 @@ public class Features
 {
   public WheelOfFortune wheelOfFortune { get; set; }
   public GoldSpin goldSpin { get; set; }
+  public AnyPayouts anyPayouts { get; set; }
 }
-
+public class AnyPayouts
+{
+  public int sevens { get; set; }
+  public int bars { get; set; }
+  public int defaults { get; set; }
+}
 [Serializable]
 public class WheelOfFortune
 {
@@ -622,9 +630,11 @@ public class WheelOfFortune
 public class GoldSpin
 {
   public bool enabled { get; set; }
-  public WheelValues wheelValues { get; set; }
+  // public WheelValues wheelValues { get; set; }
   public int jackpotValue { get; set; }
   public bool triggered { get; set; }
+  public List<int> wheelValues { get; set; }
+  public List<int> multiplierValues { get; set; }
 }
 
 [Serializable]
@@ -633,4 +643,11 @@ public class WheelValues
   public int jackpot { get; set; }
   public List<int> coins { get; set; }
   public List<int> multipliers { get; set; }
+}
+public class WheelOfFortuneSpins
+{
+  public int wheelStopIndex { get; set; }
+  public int baseAwardValue { get; set; }
+  public int multiplier { get; set; }
+  public double finalAwardValue { get; set; }
 }

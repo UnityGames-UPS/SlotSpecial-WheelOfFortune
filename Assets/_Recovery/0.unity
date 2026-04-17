@@ -4792,6 +4792,7 @@ MonoBehaviour:
   CurrentIndex: 0
   paytableList:
   - {fileID: 1546537323}
+  - {fileID: 876703405}
   - {fileID: 838526212}
   - {fileID: 2023957985}
   - {fileID: 1728115563}
@@ -6517,7 +6518,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 7c1f43c9a99b540668a6c65859099a42, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 5b03bd9cca2c64bd1bdda72fa465c569, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -6716,7 +6717,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c6dee67c9fb64b7bbed44da112a7af7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TestToken: b16b642e1d844f83a53c057d7194176d
+  TestToken: a2db28a825894558927c9db155670479
   JSManager: {fileID: 1674023574}
   slotManager: {fileID: 2046803210}
   gameManager: {fileID: 1278492944}
@@ -7676,7 +7677,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 7df62f1ef4e4b4f7c9379e569f50359c, type: 3}
+  m_Sprite: {fileID: -861166011, guid: 4457ecd3b1c844aa1b78d2d41fdb2ac3, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -9653,7 +9654,7 @@ PrefabInstance:
     - target: {fileID: 8184483151211337214, guid: ddd2b87ce37264c1e8153a385ef769fe, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 5d64524f92407488284ca0da8f714ce0, type: 3}
+      objectReference: {fileID: 21300000, guid: 5b03bd9cca2c64bd1bdda72fa465c569, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -23398,7 +23399,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: All symbols except the Wheel of Frotune, 777 and GOLD SPIN ones may appear
+  m_text: All symbols except the Wheel of Frotune, and GOLD SPIN ones may appear
     with a Triple Sub-Symbol. When forming part of a win, the prize is multiplied
     by 3x, 9x, or 27x, depending on whether there were 1, 2, or 3 Triple Sub-Symbols
     respectively.
@@ -31016,45 +31017,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: f09bb36a482774be5bd4e6aad47d25d3, type: 3}
   - {fileID: 21300000, guid: 66ebf2b7f6d9f4f09b2555e0855ae2b9, type: 3}
   - {fileID: 21300000, guid: 815812c08e40744569d1f7846352361a, type: 3}
-  wheelofFortuneTripleSeven_:
-  - {fileID: 21300000, guid: 7c1f43c9a99b540668a6c65859099a42, type: 3}
-  - {fileID: 21300000, guid: 23d7ac384b02a46c2b7a0583f715bc97, type: 3}
-  - {fileID: 21300000, guid: c155db5fcee9643cfa6575b541f6957b, type: 3}
-  - {fileID: 21300000, guid: f0684aac6aef846c8802f871ee2a56d1, type: 3}
-  - {fileID: 21300000, guid: 9bf93657ce72c4544b2a24ec31c87d3b, type: 3}
-  - {fileID: 21300000, guid: 39d63fb82e61e41428fe869bb93dec74, type: 3}
-  - {fileID: 21300000, guid: ec46bfe5df73f41ccbd24de3f777c8af, type: 3}
-  - {fileID: 21300000, guid: d14aa1a3aff044519846f17ae9f56498, type: 3}
-  - {fileID: 21300000, guid: 5305060642047485ba983f19bbecace9, type: 3}
-  - {fileID: 21300000, guid: 2a6bb37ba533d41bcbdfdbeeda3ba5ba, type: 3}
-  - {fileID: 21300000, guid: a8cb970df8ca941728718659c6e70b7f, type: 3}
-  - {fileID: 21300000, guid: fdd66e24fc2f3451aaf04b4ddc18817b, type: 3}
-  - {fileID: 21300000, guid: afc6d9ff6494b48ba97893274c3087c6, type: 3}
-  - {fileID: 21300000, guid: d074741c0dd1a4fd2a574866ee80c846, type: 3}
-  - {fileID: 21300000, guid: 24ecdd4f8ab334fa3bcf8fafbe854a52, type: 3}
-  - {fileID: 21300000, guid: f46afbf6dbe72476985adce9326ece68, type: 3}
-  - {fileID: 21300000, guid: cd695e57770b54de1879242ad6df9bb2, type: 3}
-  - {fileID: 21300000, guid: 18df1ef20b1d34bfb845f7950d0933e4, type: 3}
-  - {fileID: 21300000, guid: bb89536cb47374c7b806daa350ae3968, type: 3}
-  - {fileID: 21300000, guid: df8db37f9553a4b9ab70a983f4179b72, type: 3}
-  - {fileID: 21300000, guid: 7dfe9dd7e842540d396995ea204f683f, type: 3}
-  - {fileID: 21300000, guid: 1c0d427460ee041d789f356a488516ac, type: 3}
-  - {fileID: 21300000, guid: 8d7666687d14f43efb45aafa9de49e3e, type: 3}
-  - {fileID: 21300000, guid: 509f7fe26c1254b4c8cb1dd7147996cd, type: 3}
-  - {fileID: 21300000, guid: 4db2ec546c96444f4b9a9920ca9b17cc, type: 3}
-  - {fileID: 21300000, guid: 3eab448095fec4eb1b5197e0f46a3e1c, type: 3}
-  - {fileID: 21300000, guid: 54c775edf06d54d12871dfdb95467731, type: 3}
-  - {fileID: 21300000, guid: 7f050d546221a42648b40c0c91cf8cee, type: 3}
-  - {fileID: 21300000, guid: 965a5ddcf94514a129e4cbe075bcff66, type: 3}
-  - {fileID: 21300000, guid: a3ee0226f4efd48929b54f8ebc3b432a, type: 3}
-  - {fileID: 21300000, guid: bcfec9e29ef2f4cb8889e7c56b8c8c31, type: 3}
-  - {fileID: 21300000, guid: 7bab807c0d4724c8981ce53a82293c8c, type: 3}
-  - {fileID: 21300000, guid: 97cbc44527b854c5a9873f480a669e46, type: 3}
-  - {fileID: 21300000, guid: ff7b8b35d286b4259b8ecf0f911125ad, type: 3}
-  - {fileID: 21300000, guid: 28902daf81c60485698aa2bceda32682, type: 3}
-  - {fileID: 21300000, guid: d0546075a57be479899188a3fb96970b, type: 3}
-  - {fileID: 21300000, guid: a5ec0405e3c824d49ab4f2c707256b2f, type: 3}
-  - {fileID: 21300000, guid: fce7fe0dda99d40bb974d8ddc28e840d, type: 3}
+  wheelofFortuneTripleSeven_: []
   wheelofFortuneSpin_Sprite:
   - {fileID: 21300000, guid: 7c1f43c9a99b540668a6c65859099a42, type: 3}
   - {fileID: 21300000, guid: 23d7ac384b02a46c2b7a0583f715bc97, type: 3}

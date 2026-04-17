@@ -33,54 +33,45 @@ public class WheelView : MonoBehaviour
     internal void PopulateValues(GoldSpin values)
     {
 
-
-        for (int i = 0; i < values.wheelValues.multipliers.Count; i++)
+        // ashu change here
+        for (int i = 0; i < values.multiplierValues.Count; i++)
         {
             for (int j = 0; j < wheelItems.Length; j++)
             {
                 if (wheelItems[j].type == "MULTIPLIERS" && wheelItems[j].value == 0)
                 {
-                    wheelItems[j].value = values.wheelValues.multipliers[i];
-                    if (wheelItems[j].valueText) wheelItems[j].valueText.text = values.wheelValues.multipliers[i].ToString();
+                    wheelItems[j].value = values.multiplierValues[i];
+                    if (wheelItems[j].valueText) wheelItems[j].valueText.text = values.multiplierValues[i].ToString() + "x";
                     break;
                 }
             }
         }
-        for (int i = 0; i < values.wheelValues.coins.Count; i++)
+        for (int i = 0; i < values.wheelValues.Count; i++)
         {
             for (int j = 0; j < wheelItems.Length; j++)
             {
                 if (wheelItems[j].type == "COINS" && wheelItems[j].value == 0)
                 {
-                    wheelItems[j].value = values.wheelValues.coins[i];
-                    if (wheelItems[j].valueText) wheelItems[j].valueText.text = values.wheelValues.coins[i].ToString();
+                    wheelItems[j].value = values.wheelValues[i];
+                    if (wheelItems[j].valueText) wheelItems[j].valueText.text = values.wheelValues[i].ToString() + "x";
                     break;
                 }
             }
         }
-
-        // for (int i = 0; i < count; i++)
+        // for (int i = 0; i < values.wheelValues.coins.Count; i++)
         // {
-        //     string symbol = "";
-        //     string type = values[i].type.ToUpper();
-        //     if (type.ToUpper() == "MULTIPLIER") symbol = "x";
-        //     else if (type.ToUpper() == "FREESPIN") symbol = "+";
-        //     else symbol = "";
-
-
         //     for (int j = 0; j < wheelItems.Length; j++)
         //     {
-        //         if (type == wheelItems[j].type.ToUpper() && wheelItems[j].value == 0)
+        //         if (wheelItems[j].type == "COINS" && wheelItems[j].value == 0)
         //         {
-        //             wheelItems[j].value = values[i].value;
-        //             if (wheelItems[j].valueText) wheelItems[j].valueText.text = symbol + values[i].value.ToString();
+        //             wheelItems[j].value = values.wheelValues.coins[i];
+        //             if (wheelItems[j].valueText) wheelItems[j].valueText.text = values.wheelValues.coins[i].ToString();
         //             break;
         //         }
         //     }
-
-
-
         // }
+
+
     }
     public void OnSegmentHit(WheelItem hitItem)
     {

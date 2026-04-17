@@ -188,11 +188,11 @@ public class SlotManager : MonoBehaviour
                 animScript.AnimationSpeed = bar_Sprite.Length - 10;
                 break;
             case 6:
-                for (int i = 0; i < subTrippleSeven_Sprite.Length; i++)
+                for (int i = 0; i < wheelofFortuneTripleSeven_Sprite.Length; i++)
                 {
-                    animScript.textureArray.Add(subTrippleSeven_Sprite[i]);
+                    animScript.textureArray.Add(wheelofFortuneTripleSeven_Sprite[i]);
                 }
-                animScript.AnimationSpeed = subTrippleSeven_Sprite.Length - 10;
+                animScript.AnimationSpeed = wheelofFortuneTripleSeven_Sprite.Length - 10;
                 break;
             case 7:
                 for (int i = 0; i < subDoubleSeven_Sprite.Length; i++)
@@ -223,11 +223,11 @@ public class SlotManager : MonoBehaviour
                 animScript.AnimationSpeed = subBar_Sprite.Length - 10;
                 break;
             case 11:
-                for (int i = 0; i < wheelofFortuneTripleSeven_Sprite.Length; i++)
+                for (int i = 0; i < wheelofFortuneTripleSeven_.Length; i++)
                 {
-                    animScript.textureArray.Add(wheelofFortuneTripleSeven_Sprite[i]);
+                    animScript.textureArray.Add(wheelofFortuneTripleSeven_[i]);
                 }
-                animScript.AnimationSpeed = wheelofFortuneTripleSeven_Sprite.Length - 10;
+                animScript.AnimationSpeed = wheelofFortuneTripleSeven_.Length - 10;
                 break;
             case 12:
                 for (int i = 0; i < wheelofFortuneSpin_Sprite.Length; i++)
@@ -459,7 +459,7 @@ public class SlotManager : MonoBehaviour
             GeneratePayline(paylines[lineIndex]);
 
             // HighlightWinningSymbols(win.positions);
-            HighlightWinningSymbols(paylines[lineIndex], win.positions);
+            HighlightWinningSymbols(win.positions);
         }
     }
 
@@ -479,11 +479,71 @@ public class SlotManager : MonoBehaviour
 
             if (reel < slotmatrix.Count && row < slotmatrix[reel].slotImages.Count)
             {
-                StartGameAnimation(slotmatrix[row].slotImages[reel].gameObject);
+                StartGameAnimation(slotmatrix[reel].slotImages[row].gameObject);
             }
         }
     }
+    private void HighlightWinningSymbols(List<List<int>> positions)
+    {
+        if (positions == null)
+        {
+            Debug.LogError("Positions is NULL");
+            return;
+        }
 
+        foreach (var pos in positions)
+        {
+            if (pos == null || pos.Count < 2)
+            {
+                Debug.LogWarning("Invalid position data");
+                continue;
+            }
+
+            int reel = pos[0];
+            int row = pos[1];
+
+            if (reel >= slotmatrix.Count)
+            {
+                Debug.LogWarning($"Invalid reel index: {reel}");
+                continue;
+            }
+
+            if (row >= slotmatrix[reel].slotImages.Count)
+            {
+                Debug.LogWarning($"Invalid row index: {row}");
+                continue;
+            }
+
+            var img = slotmatrix[reel].slotImages[row];
+
+            if (img == null)
+            {
+                Debug.LogWarning($"Image NULL at reel {reel}, row {row}");
+                continue;
+            }
+
+            StartGameAnimation(img.gameObject);
+        }
+    }
+    // private void HighlightWinningSymbols(List<int> lines, List<int> positions)
+    // {
+    //     if (lines == null || positions == null) return;
+
+    //     foreach (int reel in positions)
+    //     {
+    //         if (reel >= lines.Count) continue;
+
+    //         int row = lines[reel];
+
+    //         if (reel >= slotmatrix.Count) continue;
+    //         if (row >= slotmatrix[reel].slotImages.Count) continue;
+
+    //         var img = slotmatrix[reel].slotImages[row];
+    //         if (img == null) continue;
+
+    //         StartGameAnimation(img.gameObject);
+    //     }
+    // }
     private void GeneratePayline(List<int> y_index)
     {
         GameObject MyLineObj = Instantiate(Line_Prefab, LineContainer);
