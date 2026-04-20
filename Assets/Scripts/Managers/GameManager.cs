@@ -97,11 +97,11 @@ public class GameManager : MonoBehaviour
 
         slotManager.UpdatePlayerData(false);
         slotManager.paylines = socketManager.initialData.lines;
-        slotManager.UpdateBetText(socketManager.initialData.bets[BetCounter]);
-        currentTotalBet = socketManager.initialData.bets[BetCounter] * betMultiplier;
+        slotManager.UpdateBetText(socketManager.initialData.bets[BetCounter] * socketManager.features.baseCoinValue);
+        currentTotalBet = socketManager.initialData.bets[BetCounter] * betMultiplier * socketManager.features.baseCoinValue;
         currentBalance = socketManager.playerData.balance;
         bonusManager.values = socketManager.features.wheelOfFortune.wheelValues;
-        uiManager.JackpotText.text = (socketManager.initialData.bets[BetCounter] * socketManager.features.goldSpin.jackpotValue).ToString();
+        uiManager.JackpotText.text = (socketManager.initialData.bets[BetCounter] * socketManager.features.goldSpin.jackpotValue * socketManager.features.baseCoinValue).ToString();
 
 
         CompareBalance();
@@ -177,10 +177,10 @@ public class GameManager : MonoBehaviour
             }
         }
         // TODO: WF to be done
-        currentTotalBet = socketManager.initialData.bets[BetCounter];
+        currentTotalBet = socketManager.initialData.bets[BetCounter] * socketManager.features.baseCoinValue;
 
-        slotManager.UpdateBetText(socketManager.initialData.bets[BetCounter]);
-        uiManager.JackpotText.text = (socketManager.initialData.bets[BetCounter] * socketManager.features.goldSpin.jackpotValue).ToString();
+        slotManager.UpdateBetText(socketManager.initialData.bets[BetCounter] * socketManager.features.baseCoinValue);
+        uiManager.JackpotText.text = (socketManager.initialData.bets[BetCounter] * socketManager.features.goldSpin.jackpotValue * socketManager.features.baseCoinValue).ToString();
         uiManager.InitialiseUIData(socketManager.initUIData.paylines, socketManager.initialData.totalLines);
         CompareBalance();
 

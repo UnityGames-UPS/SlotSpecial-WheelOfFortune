@@ -606,6 +606,8 @@ public class SymbolPosition
 [Serializable]
 public class Features
 {
+
+  public int baseCoinValue;
   public WheelOfFortune wheelOfFortune { get; set; }
   public GoldSpin goldSpin { get; set; }
   public AnyPayouts anyPayouts { get; set; }
