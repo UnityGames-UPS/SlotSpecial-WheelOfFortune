@@ -216,7 +216,7 @@ public class UIManager : MonoBehaviour
 
     internal void InitialiseUIData(Paylines paylines, int linescount)
     {
-        for (int i = 0; i < SymbolsText.Length; i++)
+        for (int i = 1; i < SymbolsText.Length; i++)
         {
             SymbolsText[i].text = (paylines.symbols[i].payout * socketManager.initialData.bets[gameManager.BetCounter]).ToString();
         }
