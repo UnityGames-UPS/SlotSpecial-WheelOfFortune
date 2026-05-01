@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using TMPro;
 using System;
 using System.Linq;
-
+using UnityEngine.EventSystems;
 
 public class UIManager : MonoBehaviour
 {
@@ -83,15 +83,35 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject[] paytableList;
     [SerializeField] private Button RightBtn;
     [SerializeField] private Button LeftBtn;
+
+    [Header("coin panel ")]
+    [SerializeField] private Button CoinBtn;
+    [SerializeField] private GameObject CoinPanel;
+    [SerializeField] private Button ExitCoinbtn;
+    [SerializeField] private Button OkBtn;
+    [SerializeField] private Button ExitBtn;
+    [SerializeField] private Button OptBtnPrefab;
+    [SerializeField] private Transform GridParent;
+    [SerializeField] private TMP_Text coinValue;
+    [SerializeField] private TMP_Text totalValue;
+    [SerializeField] private Sprite btnHighlight;
+    [SerializeField] private Sprite btnNormal;
+
     private bool isExit = false;
 
     internal GameObject ActivePopup = null;
+    [Header("Classes ")]
     [SerializeField] private SocketIOManager socketManager;
     [SerializeField] private AudioController audioController;
     [SerializeField] private GameManager gameManager;
     internal Action PlayButtonAudio;
 
     internal Action<float, string> ToggleAudio;
+
+
+    internal float currentCoin = 10f;
+    private double selectedBet = 1;
+    private int selectedBtnIndex;
 
     private void Start()
     {
@@ -122,6 +142,24 @@ public class UIManager : MonoBehaviour
         SetButton(CloseAD_Button, CallOnExitFunction);
 
         SkipWin_Button.onClick.AddListener(() => CloseWinPopUp());
+
+        SetButton(ExitCoinbtn, () => ClosePopup());
+        SetButton(CoinBtn, () =>
+        {
+            OpenPopup(CoinPanel);
+            ChangeBtuntext(gameManager.BetCounter);
+        });
+
+        OkBtn.onClick.RemoveAllListeners();
+        OkBtn.onClick.AddListener(() =>
+        {
+            PlayButtonAudio?.Invoke();
+            gameManager.BetCounter = selectedBtnIndex;
+            ClosePopup();
+            gameManager.SetTotalBet(selectedBtnIndex);
+
+
+        });
 
     }
 
@@ -316,4 +354,83 @@ public class UIManager : MonoBehaviour
 
     }
 
+
+
+
+    private List<Button> spawnedButtons = new List<Button>();
+
+
+    internal void ChangeBtuntext(int index)
+    {
+        foreach (var item in spawnedButtons)
+        {
+            item.image.sprite = btnNormal;
+        }
+        Debug.Log("Button Clicked+.  " + index);
+        selectedBtnIndex = index;
+        spawnedButtons[index].image.sprite = btnHighlight;
+        UpdateTotal(socketManager.initialData.bets[index]);
+    }
+    internal void SpawnButtons()
+    {
+        for (int i = 0; i < socketManager.initialData.bets.Count; i++)
+        {
+            int index = i;
+            double value = socketManager.initialData.bets[i];
+
+            Button btn = Instantiate(OptBtnPrefab, GridParent);
+            spawnedButtons.Add(btn);
+
+            TMP_Text txt = btn.GetComponentInChildren<TMP_Text>();
+            txt.text = value.ToString();
+
+            // Click Select
+            btn.onClick.AddListener(() =>
+            {
+                SelectBet(value);
+                ChangeBtuntext(index);
+            });
+
+            // Hover Events
+            AddHoverEvent(btn, value);
+        }
+    }
+    private void AddHoverEvent(Button btn, double bet)
+    {
+        EventTrigger trigger = btn.gameObject.GetComponent<EventTrigger>();
+
+        if (trigger == null)
+            trigger = btn.gameObject.AddComponent<EventTrigger>();
+
+        // Pointer Enter
+        EventTrigger.Entry enter = new EventTrigger.Entry();
+        enter.eventID = EventTriggerType.PointerEnter;
+        enter.callback.AddListener((data) =>
+        {
+            UpdateTotal(bet);
+        });
+        trigger.triggers.Add(enter);
+
+        // Pointer Exit
+        EventTrigger.Entry exit = new EventTrigger.Entry();
+        exit.eventID = EventTriggerType.PointerExit;
+        exit.callback.AddListener((data) =>
+        {
+            UpdateTotal(selectedBet);
+        });
+        trigger.triggers.Add(exit);
+    }
+    private void SelectBet(double bet)
+    {
+        selectedBet = bet;
+        UpdateTotal(selectedBet);
+
+        Debug.Log("Selected Bet: " + selectedBet);
+    }
+
+    private void UpdateTotal(double bet)
+    {
+        selectedBet = bet;
+        totalValue.text = (currentCoin * bet).ToString("0.##");
+    }
 }

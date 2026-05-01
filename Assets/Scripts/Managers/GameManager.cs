@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -102,13 +103,20 @@ public class GameManager : MonoBehaviour
         currentBalance = socketManager.playerData.balance;
         bonusManager.values = socketManager.features.wheelOfFortune.wheelValues;
         uiManager.JackpotText.text = (socketManager.initialData.bets[BetCounter] * socketManager.features.goldSpin.jackpotValue * socketManager.features.baseCoinValue).ToString();
-
+        uiManager.SpawnButtons();
 
         CompareBalance();
         inititated = true;
     }
 
+    internal void SetTotalBet(int index)
+    {
+        BetCounter = index;
+        slotManager.UpdateBetText(socketManager.initialData.bets[BetCounter] * socketManager.features.baseCoinValue);
+        currentTotalBet = socketManager.initialData.bets[BetCounter] * betMultiplier * socketManager.features.baseCoinValue;
+        uiManager.JackpotText.text = (socketManager.initialData.bets[BetCounter] * socketManager.features.goldSpin.jackpotValue * socketManager.features.baseCoinValue).ToString();
 
+    }
     private void StartAutoSpin()
     {
         if (IsSpinning) return;
@@ -176,12 +184,22 @@ public class GameManager : MonoBehaviour
                 BetCounter = socketManager.initialData.bets.Count - 1;
             }
         }
+
+        uiManager.ChangeBtuntext(BetCounter);
         // TODO: WF to be done
         currentTotalBet = socketManager.initialData.bets[BetCounter] * socketManager.features.baseCoinValue;
 
         slotManager.UpdateBetText(socketManager.initialData.bets[BetCounter] * socketManager.features.baseCoinValue);
         uiManager.JackpotText.text = (socketManager.initialData.bets[BetCounter] * socketManager.features.goldSpin.jackpotValue * socketManager.features.baseCoinValue).ToString();
         uiManager.InitialiseUIData(socketManager.initUIData.paylines, socketManager.initialData.totalLines);
+        if (IsAutoSpin && !IsSpinning)
+        {
+            IsAutoSpin = false;
+            if (AutoSpinStop_Button) AutoSpinStop_Button.gameObject.SetActive(false);
+            if (AutoSpin_Button) AutoSpin_Button.gameObject.SetActive(true);
+            StopAllCoroutines();
+        }
+
         CompareBalance();
 
     }
