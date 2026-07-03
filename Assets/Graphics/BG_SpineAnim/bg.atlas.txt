@@ -1,0 +1,18 @@
+bg.png
+size:2893,3975
+filter:Linear,Linear
+pma:true
+bg
+bounds:2,2892,2442,1081
+offsets:1,1,2444,1083
+thin spikes
+bounds:2,2,2889,2888
+offsets:1,1,2891,2890
+
+bg_2.png
+size:2908,2908
+filter:Linear,Linear
+pma:true
+thick spikes
+bounds:2,2,2904,2904
+offsets:1,1,2906,2906

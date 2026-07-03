@@ -89,6 +89,10 @@ public class ImageAnimation : MonoBehaviour
 				{
 					this.gameObject.SetActive(false);
 				}
+				// A non-looping animation has completed a full pass. Reset the state so
+				// StartAnimation() can replay it on the next spin, and clear isplaying so
+				// external listeners can detect completion.
+				currentAnimationState = ImageState.NONE;
 				isplaying = false;
 			}
 		}
@@ -114,6 +118,9 @@ public class ImageAnimation : MonoBehaviour
 			RevertToInitialState();
 			delayBetweenAnimation = idealFrameRate * textureArray.Count / AnimationSpeed;
 			currentAnimationState = ImageState.PLAYING;
+			// Mark as playing immediately so a caller polling isplaying right after
+			// starting doesn't mistake the pre-first-frame gap for completion.
+			isplaying = true;
 			Invoke("AnimationProcess", delayBetweenAnimation);
 		}
 	}
@@ -152,6 +159,27 @@ public class ImageAnimation : MonoBehaviour
 	{
 		indexOfTexture = 0;
 		SetTextureOfIndex();
+	}
+
+	// Restores the sprite that was present when this object started (captured in Start),
+	// e.g. a default background frame, rather than the animation's first frame.
+	internal void RestoreOriginalSprite()
+	{
+		if (rendererDelegate != null && OriginalSprite != null)
+			rendererDelegate.sprite = OriginalSprite;
+	}
+
+	// Approximate seconds left until a currently playing (non-looping) animation finishes.
+	// Returns 0 when not playing. Lets callers time other actions to end alongside it.
+	internal float RemainingSeconds
+	{
+		get
+		{
+			if (currentAnimationState != ImageState.PLAYING || textureArray == null || textureArray.Count == 0)
+				return 0f;
+			int remainingFrames = Mathf.Max(0, textureArray.Count - indexOfTexture);
+			return remainingFrames * delayBetweenAnimation;
+		}
 	}
 
 	private void SetTextureOfIndex()

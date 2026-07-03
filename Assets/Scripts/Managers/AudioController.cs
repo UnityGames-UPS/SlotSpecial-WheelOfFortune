@@ -9,6 +9,7 @@ public class AudioController : MonoBehaviour
     [SerializeField] private AudioSource audioPlayer_wl;
     [SerializeField] private AudioSource audioPlayer_button;
     [SerializeField] private AudioSource audioPlayer_Spin;
+    [SerializeField] private AudioSource audioPlayer_thirdCol;
 
     [Header("clips")]
     [SerializeField] private AudioClip SpinButtonClip;
@@ -19,6 +20,7 @@ public class AudioController : MonoBehaviour
     [SerializeField] private AudioClip Bonus_Win_Audio;
     [SerializeField] private AudioClip NormalBg_Audio;
     [SerializeField] private AudioClip BonusBg_Audio;
+    [SerializeField] private AudioClip ThirdColSpinClip;
 
     private void Awake()
     {
@@ -71,6 +73,23 @@ public class AudioController : MonoBehaviour
 
         if (audioPlayer_Spin) audioPlayer_Spin.Stop();
 
+    }
+
+    // Special looping spin SFX for the third-column anticipation. Plays while the
+    // anticipation animation runs and is stopped when it ends.
+    internal void PlayThirdColSpinAudio()
+    {
+        if (audioPlayer_thirdCol)
+        {
+            audioPlayer_thirdCol.clip = ThirdColSpinClip;
+            audioPlayer_thirdCol.loop = true;
+            audioPlayer_thirdCol.Play();
+        }
+    }
+
+    internal void StopThirdColSpinAudio()
+    {
+        if (audioPlayer_thirdCol) audioPlayer_thirdCol.Stop();
     }
 
     private void OnApplicationFocus(bool focus)
@@ -159,9 +178,11 @@ public class AudioController : MonoBehaviour
             case "button":
                 audioPlayer_button.mute = value<0.1;
                 audioPlayer_Spin.mute=value<0.1;
+                if (audioPlayer_thirdCol) audioPlayer_thirdCol.mute = value<0.1;
 
                 audioPlayer_button.volume = value;
                 audioPlayer_Spin.volume = value;
+                if (audioPlayer_thirdCol) audioPlayer_thirdCol.volume = value;
                 break;
             case "wl":
                 audioPlayer_wl.mute = value<0.1;
@@ -171,10 +192,12 @@ public class AudioController : MonoBehaviour
                 audioPlayer_wl.mute = value<0.1;
                 bg_adudio.mute = value<0.1;
                 audioPlayer_button.mute = value<0.1;
-                
+                if (audioPlayer_thirdCol) audioPlayer_thirdCol.mute = value<0.1;
+
                 audioPlayer_wl.volume = value;
                 bg_adudio.volume = value;
                 audioPlayer_button.volume = value;
+                if (audioPlayer_thirdCol) audioPlayer_thirdCol.volume = value;
                 break;
         }
     }

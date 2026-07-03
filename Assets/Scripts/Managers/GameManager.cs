@@ -7,326 +7,247 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] private SlotManager slotManager;
-    [SerializeField] private SocketIOManager socketManager;
-    [SerializeField] private UIManager uiManager;
-    [SerializeField] private BonusManager bonusManager;
-    [SerializeField] private AudioController audioController;
+  [SerializeField] private SlotManager slotManager;
+  [SerializeField] private SocketIOManager socketManager;
+  [SerializeField] private UIManager uiManager;
+  [SerializeField] private BonusManager bonusManager;
+  [SerializeField] private AudioController audioController;
 
-    [Header("Buttons")]
-    [SerializeField] private Button SlotStart_Button;
-    [SerializeField] private Button AutoSpin_Button;
-    [SerializeField] private Button AutoSpinStop_Button;
-    // [SerializeField] private Button Maxbet_button;
-    [SerializeField] private Button BetPlus_Button;
-    [SerializeField] private Button BetMinus_Button;
-    [SerializeField] private Button Turbo_Button;
-    [SerializeField] private Button StopSpin_Button;
-    private bool IsSpinning = false;
-    private bool IsAutoSpin = false;
-    [Header("wheel")]
-    [SerializeField] private GameObject goldenWheelPanel;
-    [SerializeField] private WheelView goldenWheel;
-    [SerializeField] private GameObject goldWinPanel;
-    [SerializeField] private TMP_Text goldWinPanelText;
-    internal bool turboMode;
+  [Header("Buttons")]
+  [SerializeField] private Button SlotStart_Button;
+  [SerializeField] private Button AutoSpin_Button;
+  [SerializeField] private Button AutoSpinStop_Button;
+  // [SerializeField] private Button Maxbet_button;
+  [SerializeField] private Button BetPlus_Button;
+  [SerializeField] private Button BetMinus_Button;
+  [SerializeField] private Button Turbo_Button;
+  [SerializeField] private Button StopSpin_Button;
+  private bool IsSpinning = false;
+  private bool IsAutoSpin = false;
+  [Header("wheel")]
+  [SerializeField] private GameObject goldenWheelPanel;
+  [SerializeField] private WheelView goldenWheel;
+  [SerializeField] private GameObject goldWinPanel;
+  [SerializeField] private TMP_Text goldWinPanelText;
+  internal bool turboMode;
 
-    [SerializeField] private GameObject turboAnim;
-    internal bool immediateStop;
-    [SerializeField] internal int BetCounter = 0;
+  [SerializeField] private GameObject turboAnim;
+  internal bool immediateStop;
+  [SerializeField] internal int BetCounter = 0;
 
-    private double currentBalance = 0;
-    internal double currentTotalBet = 0;
+  private double currentBalance = 0;
+  internal double currentTotalBet = 0;
 
-    private bool inititated = false;
+  private bool inititated = false;
 
-    internal static bool checkWin;
-    [SerializeField] private int betMultiplier;
-    private void Awake()
+  internal static bool checkWin;
+  [SerializeField] private int betMultiplier;
+
+  [Header("Third Column Anticipation")]
+  [Range(0f, 1f)]
+  [SerializeField] private float anticipationTeaserChance = 0.4f;
+
+  private void Awake()
+  {
+    SlotStart_Button.onClick.AddListener(StartSpin);
+
+    AutoSpin_Button.onClick.AddListener(StartAutoSpin);
+    AutoSpinStop_Button.onClick.AddListener(StopAutoSpin);
+
+    // socketManager.ShowAnotherDevicePopUp = () => uIManager.ADPopUp();
+    // socketManager.ShowDisconnectionPopUp = () => uIManager.DisconnectionPopup();
+
+    BetPlus_Button.onClick.AddListener(delegate { OnBetChange(true); });
+    BetMinus_Button.onClick.AddListener(delegate { OnBetChange(false); });
+
+    StopSpin_Button.onClick.AddListener(() => { audioController.PlayButtonAudio(); StartCoroutine(StopSpin()); });
+
+    bonusManager.PlayButtonAudio = () => audioController.PlayButtonAudio("spin");
+    bonusManager.PlaySpinAudio = () => audioController.PlaySpinAudio("bonus");
+    bonusManager.StopSpinAudio = () => audioController.StopSpinAudio();
+    bonusManager.PlayWinAudio = () => audioController.PlayWLAudio("bonuswin");
+    bonusManager.StopWinAudio = () => audioController.StopWLAaudio();
+
+    uiManager.PlayButtonAudio = () => audioController.PlayButtonAudio();
+    uiManager.ToggleAudio = (float value, string type) => audioController.ToggleMute(value, type);
+
+    Turbo_Button.onClick.AddListener(() => { audioController.PlayButtonAudio(); ToggleTurboMode(); });
+    // uIManager.Clos
+
+  }
+
+  internal void ToggleTurboMode()
+  {
+    turboMode = !turboMode;
+    if (turboMode)
+      turboAnim.SetActive(true);
+    else
+      turboAnim.SetActive(false);
+
+  }
+
+  internal IEnumerator StopSpin()
+  {
+    if (IsAutoSpin || immediateStop)
+      yield break;
+    immediateStop = true;
+    StopSpin_Button.interactable = false;
+    yield return new WaitUntil(() => !IsSpinning);
+    immediateStop = false;
+    StopSpin_Button.interactable = true;
+
+
+  }
+  internal void StartGame()
+  {
+    slotManager.UpdatePlayerData(false);
+    slotManager.paylines = socketManager.initialData.lines;
+    slotManager.UpdateBetText(socketManager.initialData.bets[BetCounter] * socketManager.features.baseCoinValue);
+    currentTotalBet = socketManager.initialData.bets[BetCounter] * betMultiplier * socketManager.features.baseCoinValue;
+    currentBalance = socketManager.playerData.balance;
+    bonusManager.values = socketManager.features.wheelOfFortune.wheelValues;
+    uiManager.JackpotText.text = (socketManager.initialData.bets[BetCounter] * socketManager.features.goldSpin.jackpotValue * socketManager.features.baseCoinValue).ToString();
+    uiManager.SpawnButtons();
+
+    CompareBalance();
+    inititated = true;
+  }
+
+  internal void SetTotalBet(int index)
+  {
+    BetCounter = index;
+    slotManager.UpdateBetText(socketManager.initialData.bets[BetCounter] * socketManager.features.baseCoinValue);
+    currentTotalBet = socketManager.initialData.bets[BetCounter] * betMultiplier * socketManager.features.baseCoinValue;
+    uiManager.JackpotText.text = (socketManager.initialData.bets[BetCounter] * socketManager.features.goldSpin.jackpotValue * socketManager.features.baseCoinValue).ToString();
+  }
+  private void StartAutoSpin()
+  {
+    if (IsSpinning) return;
+
+    IsAutoSpin = true;
+
+    ErrorHandler.RunSafely(() =>
     {
-        SlotStart_Button.onClick.AddListener(StartSpin);
+      audioController.PlayButtonAudio("spin");
+      if (AutoSpinStop_Button) AutoSpinStop_Button.gameObject.SetActive(true);
+      if (AutoSpin_Button) AutoSpin_Button.gameObject.SetActive(false);
+      StartCoroutine(ErrorHandler.RunSafely(AutoSpinRoutine(), OnError));
+    }, OnError);
+  }
 
-        AutoSpin_Button.onClick.AddListener(StartAutoSpin);
-        AutoSpinStop_Button.onClick.AddListener(StopAutoSpin);
+  private void StopAutoSpin()
+  {
+    ErrorHandler.RunSafely(() =>
+    {
+      if (IsAutoSpin)
+      {
+        IsAutoSpin = false;
+        if (AutoSpinStop_Button) AutoSpinStop_Button.gameObject.SetActive(false);
+        if (AutoSpin_Button) AutoSpin_Button.gameObject.SetActive(true);
+        StartCoroutine(ErrorHandler.RunSafely(StopAutoSpinCoroutine(), OnError));
+      }
+    }, OnError);
+  }
 
-        // socketManager.ShowAnotherDevicePopUp = () => uIManager.ADPopUp();
-        // socketManager.ShowDisconnectionPopUp = () => uIManager.DisconnectionPopup();
+  private IEnumerator StopAutoSpinCoroutine()
+  {
+    yield return new WaitUntil(() => !IsSpinning);
+    ToggleButtonGrp(true);
+    StopAllCoroutines();
+  }
 
-        BetPlus_Button.onClick.AddListener(delegate { OnBetChange(true); });
-        BetMinus_Button.onClick.AddListener(delegate { OnBetChange(false); });
+  private void StartSpin()
+  {
+    ErrorHandler.RunSafely(() =>
+    {
+      audioController.PlayButtonAudio("spin");
+      StartCoroutine(ErrorHandler.RunSafely(SpinRoutine(), OnError));
+    }, OnError);
+  }
 
-        StopSpin_Button.onClick.AddListener(() => { audioController.PlayButtonAudio(); StartCoroutine(StopSpin()); });
-
-        bonusManager.PlayButtonAudio = () => audioController.PlayButtonAudio("spin");
-        bonusManager.PlaySpinAudio = () => audioController.PlaySpinAudio("bonus");
-        bonusManager.StopSpinAudio = () => audioController.StopSpinAudio();
-        bonusManager.PlayWinAudio = () => audioController.PlayWLAudio("bonuswin");
-        bonusManager.StopWinAudio = () => audioController.StopWLAaudio();
-
-        uiManager.PlayButtonAudio = () => audioController.PlayButtonAudio();
-        uiManager.ToggleAudio = (float value, string type) => audioController.ToggleMute(value, type);
-
-        Turbo_Button.onClick.AddListener(() => { audioController.PlayButtonAudio(); ToggleTurboMode(); });
-        // uIManager.Clos
-
+  private void OnBetChange(bool IncDec)
+  {
+    // if (audioController) audioController.PlayButtonAudio();
+    if (IncDec)
+    {
+      BetCounter++;
+      if (BetCounter > socketManager.initialData.bets.Count - 1)
+      {
+        BetCounter = 0;
+      }
+    }
+    else
+    {
+      BetCounter--;
+      if (BetCounter < 0)
+      {
+        BetCounter = socketManager.initialData.bets.Count - 1;
+      }
     }
 
-    internal void ToggleTurboMode()
-    {
-        turboMode = !turboMode;
-        if (turboMode)
-            turboAnim.SetActive(true);
-        else
-            turboAnim.SetActive(false);
+    uiManager.ChangeBtuntext(BetCounter);
+    // TODO: WF to be done
+    currentTotalBet = socketManager.initialData.bets[BetCounter] * socketManager.features.baseCoinValue;
 
+    slotManager.UpdateBetText(socketManager.initialData.bets[BetCounter] * socketManager.features.baseCoinValue);
+    uiManager.JackpotText.text = (socketManager.initialData.bets[BetCounter] * socketManager.features.goldSpin.jackpotValue * socketManager.features.baseCoinValue).ToString();
+    uiManager.InitialiseUIData(socketManager.initUIData.paylines, socketManager.initialData.totalLines);
+    if (IsAutoSpin && !IsSpinning)
+    {
+      IsAutoSpin = false;
+      if (AutoSpinStop_Button) AutoSpinStop_Button.gameObject.SetActive(false);
+      if (AutoSpin_Button) AutoSpin_Button.gameObject.SetActive(true);
+      StopAllCoroutines();
     }
 
-    internal IEnumerator StopSpin()
-    {
-        if (IsAutoSpin || immediateStop)
-            yield break;
-        immediateStop = true;
-        StopSpin_Button.interactable = false;
-        yield return new WaitUntil(() => !IsSpinning);
-        immediateStop = false;
-        StopSpin_Button.interactable = true;
+    CompareBalance();
+
+  }
 
 
-    }
-    internal void StartGame()
+  private bool OnSpinStart()
+  {
+    return ErrorHandler.RunSafely(() =>
     {
 
-        slotManager.UpdatePlayerData(false);
-        slotManager.paylines = socketManager.initialData.lines;
-        slotManager.UpdateBetText(socketManager.initialData.bets[BetCounter] * socketManager.features.baseCoinValue);
-        currentTotalBet = socketManager.initialData.bets[BetCounter] * betMultiplier * socketManager.features.baseCoinValue;
-        currentBalance = socketManager.playerData.balance;
-        bonusManager.values = socketManager.features.wheelOfFortune.wheelValues;
-        uiManager.JackpotText.text = (socketManager.initialData.bets[BetCounter] * socketManager.features.goldSpin.jackpotValue * socketManager.features.baseCoinValue).ToString();
-        uiManager.SpawnButtons();
+      slotManager.StopGameAnimation();
+      slotManager.WinningsAnim(false);
+      slotManager.ResetLinesAndWins();
+      bool start = CompareBalance();
+      ToggleButtonGrp(false);
+      if (start)
+      {
+        slotManager.BalanceDeduction();
 
-        CompareBalance();
-        inititated = true;
-    }
+      }
+      return start;
 
-    internal void SetTotalBet(int index)
+    }, OnError);
+  }
+
+  private void OnSpin(List<List<string>> result)
+  {
+    ErrorHandler.RunSafely(() =>
     {
-        BetCounter = index;
-        slotManager.UpdateBetText(socketManager.initialData.bets[BetCounter] * socketManager.features.baseCoinValue);
-        currentTotalBet = socketManager.initialData.bets[BetCounter] * betMultiplier * socketManager.features.baseCoinValue;
-        uiManager.JackpotText.text = (socketManager.initialData.bets[BetCounter] * socketManager.features.goldSpin.jackpotValue * socketManager.features.baseCoinValue).ToString();
+      slotManager.InitiateForAnimation(result);
+    }, OnError);
+  }
 
-    }
-    private void StartAutoSpin()
+  private IEnumerator OnSpinEnd(bool lowbal = false)
+  {
+    if (!lowbal)
     {
-        if (IsSpinning) return;
+      audioController.StopSpinAudio();
+      currentBalance = socketManager.resultData.player.balance;
+      Debug.Log(currentBalance);
+      slotManager.UpdatePlayerData(true);
+      slotManager.ProcessPayoutLines(socketManager.resultData.payload.winningLines);
+      // TODO: WF enable animation
 
-        IsAutoSpin = true;
+      //   slotManager.ProcessPointsAnimations(socketManager.resultData.payload.winningLines);
 
-        ErrorHandler.RunSafely(() =>
-        {
-            audioController.PlayButtonAudio("spin");
-            if (AutoSpinStop_Button) AutoSpinStop_Button.gameObject.SetActive(true);
-            if (AutoSpin_Button) AutoSpin_Button.gameObject.SetActive(false);
-            StartCoroutine(ErrorHandler.RunSafely(AutoSpinRoutine(), OnError));
-        }, OnError);
-    }
-
-    private void StopAutoSpin()
-    {
-        ErrorHandler.RunSafely(() =>
-        {
-            if (IsAutoSpin)
-            {
-                IsAutoSpin = false;
-                if (AutoSpinStop_Button) AutoSpinStop_Button.gameObject.SetActive(false);
-                if (AutoSpin_Button) AutoSpin_Button.gameObject.SetActive(true);
-                StartCoroutine(ErrorHandler.RunSafely(StopAutoSpinCoroutine(), OnError));
-            }
-        }, OnError);
-    }
-
-    private IEnumerator StopAutoSpinCoroutine()
-    {
-        yield return new WaitUntil(() => !IsSpinning);
-        ToggleButtonGrp(true);
-        StopAllCoroutines();
-    }
-
-    private void StartSpin()
-    {
-        ErrorHandler.RunSafely(() =>
-        {
-            audioController.PlayButtonAudio("spin");
-            StartCoroutine(ErrorHandler.RunSafely(SpinRoutine(), OnError));
-        }, OnError);
-    }
-
-
-    private void OnBetChange(bool IncDec)
-    {
-
-        // if (audioController) audioController.PlayButtonAudio();
-
-        if (IncDec)
-        {
-            BetCounter++;
-            if (BetCounter > socketManager.initialData.bets.Count - 1)
-            {
-                BetCounter = 0;
-            }
-        }
-        else
-        {
-            BetCounter--;
-            if (BetCounter < 0)
-            {
-                BetCounter = socketManager.initialData.bets.Count - 1;
-            }
-        }
-
-        uiManager.ChangeBtuntext(BetCounter);
-        // TODO: WF to be done
-        currentTotalBet = socketManager.initialData.bets[BetCounter] * socketManager.features.baseCoinValue;
-
-        slotManager.UpdateBetText(socketManager.initialData.bets[BetCounter] * socketManager.features.baseCoinValue);
-        uiManager.JackpotText.text = (socketManager.initialData.bets[BetCounter] * socketManager.features.goldSpin.jackpotValue * socketManager.features.baseCoinValue).ToString();
-        uiManager.InitialiseUIData(socketManager.initUIData.paylines, socketManager.initialData.totalLines);
-        if (IsAutoSpin && !IsSpinning)
-        {
-            IsAutoSpin = false;
-            if (AutoSpinStop_Button) AutoSpinStop_Button.gameObject.SetActive(false);
-            if (AutoSpin_Button) AutoSpin_Button.gameObject.SetActive(true);
-            StopAllCoroutines();
-        }
-
-        CompareBalance();
-
-    }
-
-
-    private bool OnSpinStart()
-    {
-        return ErrorHandler.RunSafely(() =>
-        {
-
-            slotManager.StopGameAnimation();
-            slotManager.WinningsAnim(false);
-            slotManager.ResetLinesAndWins();
-            bool start = CompareBalance();
-            ToggleButtonGrp(false);
-            if (start)
-            {
-                slotManager.BalanceDeduction();
-
-            }
-            return start;
-
-        }, OnError);
-    }
-
-    private void OnSpin(List<List<string>> result)
-    {
-        ErrorHandler.RunSafely(() =>
-        {
-            slotManager.InitiateForAnimation(result);
-        }, OnError);
-    }
-
-    private IEnumerator OnSpinEnd(bool lowbal = false)
-    {
-        if (!lowbal)
-        {
-            audioController.StopSpinAudio();
-            currentBalance = socketManager.resultData.player.balance;
-            Debug.Log(currentBalance);
-            slotManager.UpdatePlayerData(true);
-            slotManager.ProcessPayoutLines(socketManager.resultData.payload.winningLines);
-            // TODO: WF enable animation
-
-            //   slotManager.ProcessPointsAnimations(socketManager.resultData.payload.winningLines);
-
-            if (socketManager.resultData.payload.wheelBonus.isTriggered)
-            {
-                bonusManager.finalPayout = socketManager.resultData.payload.wheelBonus.awardValue;
-
-                int foundIndex = 0;
-                // if (bonusManager.values != null && bonusManager.values.Count > 0)
-                // {
-                //     foundIndex = bonusManager.values.FindIndex(v => v == awardValue);
-                // }
-                bonusManager.targetIndex = socketManager.resultData.payload.features.wheelOfFortune.wheelStopIndex;
-                Debug.Log(foundIndex);
-                bonusManager.multipler = socketManager.initialData.bets[BetCounter];
-
-                bonusManager.StartBonus(IsAutoSpin);
-                audioController.playBgAudio("bonus");
-
-                yield return new WaitUntil(() => !bonusManager.isBonusPlaying);
-
-                audioController.playBgAudio();
-
-            }
-            else if (socketManager.resultData.payload.goldSpinBonus.isTriggered)
-            {
-                yield return new WaitForSeconds(1f);
-                goldenWheel.PopulateValues(socketManager.features.goldSpin);
-                goldenWheelPanel.SetActive(true);
-                yield return new WaitForSeconds(2f);
-                goldenWheel.targetIndex = socketManager.resultData.payload.goldSpinBonus.wheelStopIndex;
-                StartCoroutine(goldenWheel.StopWheel());
-                yield return new WaitForSeconds(6f);
-                if (socketManager.resultData.payload.goldSpinBonus.awardType == "multiplier") goldWinPanelText.text = socketManager.resultData.payload.goldSpinBonus.multiplier.ToString() + "x";
-                else goldWinPanelText.text = socketManager.resultData.payload.goldSpinBonus.totalWinAmount.ToString();
-                goldWinPanel.SetActive(true);
-                yield return new WaitForSeconds(3f);
-                goldWinPanel.SetActive(false);
-                goldenWheelPanel.SetActive(false);
-                if (socketManager.resultData.payload.goldSpinBonus.wheelOfFortuneTriggered)
-                {
-                    bonusManager.finalPayout = socketManager.resultData.payload.goldSpinBonus.wheelOfFortuneSpins.finalAwardValue;
-                    bonusManager.goldMultiplyertextText.text = goldWinPanelText.text;
-
-                    int foundIndex = 0;
-                    bonusManager.targetIndex = socketManager.resultData.payload.goldSpinBonus.wheelOfFortuneSpins.wheelStopIndex;
-                    Debug.Log(foundIndex);
-                    bonusManager.multipler = socketManager.initialData.bets[BetCounter];
-
-                    bonusManager.StartBonus(IsAutoSpin);
-                    audioController.playBgAudio("bonus");
-
-                    yield return new WaitUntil(() => !bonusManager.isBonusPlaying);
-
-                    audioController.playBgAudio();
-                }
-            }
-            else if (socketManager.resultData.payload.totalWin > 0)
-            {
-                int wintype = CheckWinPopups(socketManager.resultData.payload.totalWin);
-                // wintype=1;
-                if (wintype > 0)
-                {
-                    checkWin = true;
-                    audioController.PlayWLAudio("win");
-                    uiManager.PopulateWin(wintype, socketManager.resultData.payload.totalWin);
-                    Debug.Log($"checking, {checkWin}");
-                    yield return new WaitUntil(() => !checkWin);
-                    checkWin = false;
-                    Debug.Log($"checking, {checkWin}");
-                    audioController.StopWLAaudio();
-                }
-
-                slotManager.WinningsAnim(true);
-            }
-        }
-
-        if (!IsAutoSpin) ToggleButtonGrp(true);
-
-        yield return null;
-
-    }
-    internal IEnumerator WheelTriggeredinGold()
-    {
+      if (socketManager.resultData.payload.wheelBonus.isTriggered)
+      {
         bonusManager.finalPayout = socketManager.resultData.payload.wheelBonus.awardValue;
 
         int foundIndex = 0;
@@ -344,123 +265,230 @@ public class GameManager : MonoBehaviour
         yield return new WaitUntil(() => !bonusManager.isBonusPlaying);
 
         audioController.playBgAudio();
+
+      }
+      else if (socketManager.resultData.payload.goldSpinBonus.isTriggered)
+      {
+        yield return new WaitForSeconds(1f);
+        goldenWheel.PopulateValues(socketManager.features.goldSpin);
+        goldenWheelPanel.SetActive(true);
+        yield return new WaitForSeconds(2f);
+        goldenWheel.targetIndex = socketManager.resultData.payload.goldSpinBonus.wheelStopIndex;
+        StartCoroutine(goldenWheel.StopWheel());
+        yield return new WaitForSeconds(6f);
+        if (socketManager.resultData.payload.goldSpinBonus.awardType == "multiplier") goldWinPanelText.text = socketManager.resultData.payload.goldSpinBonus.multiplier.ToString() + "x";
+        else goldWinPanelText.text = socketManager.resultData.payload.goldSpinBonus.totalWinAmount.ToString();
+        goldWinPanel.SetActive(true);
+        yield return new WaitForSeconds(3f);
+        goldWinPanel.SetActive(false);
+        goldenWheelPanel.SetActive(false);
+        if (socketManager.resultData.payload.goldSpinBonus.wheelOfFortuneTriggered)
+        {
+          bonusManager.finalPayout = socketManager.resultData.payload.goldSpinBonus.wheelOfFortuneSpins.finalAwardValue;
+          bonusManager.goldMultiplyertextText.text = goldWinPanelText.text;
+
+          int foundIndex = 0;
+          bonusManager.targetIndex = socketManager.resultData.payload.goldSpinBonus.wheelOfFortuneSpins.wheelStopIndex;
+          Debug.Log(foundIndex);
+          bonusManager.multipler = socketManager.initialData.bets[BetCounter];
+
+          bonusManager.StartBonus(IsAutoSpin);
+          audioController.playBgAudio("bonus");
+
+          yield return new WaitUntil(() => !bonusManager.isBonusPlaying);
+
+          audioController.playBgAudio();
+        }
+      }
+      else if (socketManager.resultData.payload.totalWin > 0)
+      {
+        int wintype = CheckWinPopups(socketManager.resultData.payload.totalWin);
+        // wintype=1;
+        if (wintype > 0)
+        {
+          checkWin = true;
+          audioController.PlayWLAudio("win");
+          uiManager.PopulateWin(wintype, socketManager.resultData.payload.totalWin);
+          Debug.Log($"checking, {checkWin}");
+          yield return new WaitUntil(() => !checkWin);
+          checkWin = false;
+          Debug.Log($"checking, {checkWin}");
+          audioController.StopWLAaudio();
+        }
+
+        slotManager.WinningsAnim(true);
+      }
     }
-    private IEnumerator SpinRoutine()
+
+    if (!IsAutoSpin) ToggleButtonGrp(true);
+
+    yield return null;
+
+  }
+  internal IEnumerator WheelTriggeredinGold()
+  {
+    bonusManager.finalPayout = socketManager.resultData.payload.wheelBonus.awardValue;
+
+    int foundIndex = 0;
+    // if (bonusManager.values != null && bonusManager.values.Count > 0)
+    // {
+    //     foundIndex = bonusManager.values.FindIndex(v => v == awardValue);
+    // }
+    bonusManager.targetIndex = socketManager.resultData.payload.features.wheelOfFortune.wheelStopIndex;
+    Debug.Log(foundIndex);
+    bonusManager.multipler = socketManager.initialData.bets[BetCounter];
+
+    bonusManager.StartBonus(IsAutoSpin);
+    audioController.playBgAudio("bonus");
+
+    yield return new WaitUntil(() => !bonusManager.isBonusPlaying);
+
+    audioController.playBgAudio();
+  }
+  // Decide whether the third-column anticipation should play this spin.
+  // Never in turbo. Guaranteed when the gold-spin (13) or WoF spin (12) symbol lands on
+  // reel 3; otherwise a random teaser so it looks like it could have landed there.
+  private bool ShouldPlayThirdColAnticipation()
+  {
+    return ErrorHandler.RunSafely(() =>
+    {
+      var reels = socketManager.resultData?.payload?.reels;
+      if (reels != null && reels.Count > 2 && reels[2] != null)
+      {
+        foreach (var symbol in reels[2])
+          if (symbol == "12" || symbol == "13") return true;
+      }
+
+      return UnityEngine.Random.value < anticipationTeaserChance;
+    }, OnError);
+  }
+
+  private IEnumerator SpinRoutine()
+  {
+
+    bool start = OnSpinStart();
+    if (!start)
+    {
+      OnSpinEnd(true);
+      if (IsAutoSpin)
+      {
+        IsAutoSpin = false;
+        StopAutoSpin();
+        yield return new WaitForSeconds(1);
+      }
+      ToggleButtonGrp(true);
+      yield break;
+    }
+    IsSpinning = true;
+    socketManager.AccumulateResult(BetCounter);
+    yield return new WaitUntil(() => socketManager.isResultdone);
+    audioController.PlaySpinAudio();
+    if (!IsAutoSpin)
+      StopSpin_Button.gameObject.SetActive(true);
+
+    yield return ErrorHandler.RunSafely(slotManager.InitiateSpin(), OnError);
+
+    if (!immediateStop)
+    {
+      int waitFor = turboMode ? 5 : 10;
+      for (int i = 0; i < waitFor; i++)
+      {
+        if (immediateStop)
+        {
+          break; 
+        }
+
+        yield return new WaitForSecondsRealtime(0.1f);
+      }
+    }
+
+    OnSpin(socketManager.resultData.payload.reels);
+    slotManager.playThirdColAnticipation = ShouldPlayThirdColAnticipation();
+    yield return ErrorHandler.RunSafely(slotManager.TerminateSpin(), OnError);
+    if (StopSpin_Button.gameObject.activeSelf)
+      StopSpin_Button.gameObject.SetActive(false);
+    if (!IsAutoSpin) IsSpinning = false;
+    yield return ErrorHandler.RunSafely(OnSpinEnd(), OnError);
+  }
+
+  IEnumerator AutoSpinRoutine()
+  {
+
+    while (IsAutoSpin)
+    {
+      yield return ErrorHandler.RunSafely(SpinRoutine(), OnError);
+      if (socketManager.resultData.payload.totalWin > 0)
+        yield return new WaitForSeconds(2f);
+      else
+        yield return new WaitForSeconds(1.2f);
+    }
+
+    IsSpinning = false;
+  }
+
+  void OnError()
+  {
+    slotManager.KillAllTweens();
+  }
+
+
+  private bool CompareBalance()
+  {
+    if (currentBalance < currentTotalBet)
+    {
+      uiManager.LowBalPopup();
+      if (AutoSpin_Button) AutoSpin_Button.interactable = false;
+      if (SlotStart_Button) SlotStart_Button.interactable = false;
+      return false;
+    }
+    else
+    {
+      if (AutoSpin_Button) AutoSpin_Button.interactable = true;
+      if (SlotStart_Button) SlotStart_Button.interactable = true;
+      return true;
+
+    }
+  }
+
+
+  internal int CheckWinPopups(double WinAmout)
+  {
+    if (WinAmout >= currentTotalBet * 10 && WinAmout < currentTotalBet * 15)
+    {
+      return 1;
+    }
+    else if (WinAmout >= currentTotalBet * 15 && WinAmout < currentTotalBet * 20)
+    {
+      return 2;
+
+    }
+    else if (WinAmout >= currentTotalBet * 20)
+    {
+      return 3;
+    }
+    else
     {
 
-        bool start = OnSpinStart();
-        if (!start)
-        {
-            OnSpinEnd(true);
-            if (IsAutoSpin)
-            {
-                IsAutoSpin = false;
-                StopAutoSpin();
-                yield return new WaitForSeconds(1);
-            }
-            ToggleButtonGrp(true);
-            yield break;
-        }
-        IsSpinning = true;
-        socketManager.AccumulateResult(BetCounter);
-        yield return new WaitUntil(() => socketManager.isResultdone);
-        audioController.PlaySpinAudio();
-        if (!IsAutoSpin)
-            StopSpin_Button.gameObject.SetActive(true);
-
-        yield return ErrorHandler.RunSafely(slotManager.InitiateSpin(), OnError);
-
-        OnSpin(socketManager.resultData.payload.reels);
-        if (!turboMode)
-            yield return new WaitForSeconds(0.25f);
-
-        yield return ErrorHandler.RunSafely(slotManager.TerminateSpin(), OnError);
-        if (StopSpin_Button.gameObject.activeSelf)
-            StopSpin_Button.gameObject.SetActive(false);
-        if (!IsAutoSpin) IsSpinning = false;
-        yield return ErrorHandler.RunSafely(OnSpinEnd(), OnError);
+      return 0;
     }
 
-    IEnumerator AutoSpinRoutine()
-    {
+  }
 
-        while (IsAutoSpin)
-        {
-            yield return ErrorHandler.RunSafely(SpinRoutine(), OnError);
-            if (socketManager.resultData.payload.totalWin > 0)
-                yield return new WaitForSeconds(2f);
-            else
-                yield return new WaitForSeconds(1.2f);
-        }
+  void SkipWin()
+  {
 
-        IsSpinning = false;
-    }
+    if (checkWin)
+      checkWin = false;
+  }
+  void ToggleButtonGrp(bool toggle)
+  {
 
-    void OnError()
-    {
-        slotManager.KillAllTweens();
-        // socketManager.CloseSocket();
-        // Application.ExternalCall("window.parent.postMessage", "onExit", "*");
-    }
+    if (SlotStart_Button) SlotStart_Button.interactable = toggle;
+    if (AutoSpin_Button) AutoSpin_Button.interactable = toggle;
+    // if (Maxbet_button) Maxbet_button.interactable = toggle;
+    if (BetMinus_Button) BetMinus_Button.interactable = toggle;
+    if (BetPlus_Button) BetPlus_Button.interactable = toggle;
 
-
-    private bool CompareBalance()
-    {
-        if (currentBalance < currentTotalBet)
-        {
-            uiManager.LowBalPopup();
-            if (AutoSpin_Button) AutoSpin_Button.interactable = false;
-            if (SlotStart_Button) SlotStart_Button.interactable = false;
-            return false;
-        }
-        else
-        {
-            if (AutoSpin_Button) AutoSpin_Button.interactable = true;
-            if (SlotStart_Button) SlotStart_Button.interactable = true;
-            return true;
-
-        }
-    }
-
-
-    internal int CheckWinPopups(double WinAmout)
-    {
-        if (WinAmout >= currentTotalBet * 10 && WinAmout < currentTotalBet * 15)
-        {
-            return 1;
-        }
-        else if (WinAmout >= currentTotalBet * 15 && WinAmout < currentTotalBet * 20)
-        {
-            return 2;
-
-        }
-        else if (WinAmout >= currentTotalBet * 20)
-        {
-            return 3;
-        }
-        else
-        {
-
-            return 0;
-        }
-
-    }
-
-    void SkipWin()
-    {
-
-        if (checkWin)
-            checkWin = false;
-    }
-    void ToggleButtonGrp(bool toggle)
-    {
-
-        if (SlotStart_Button) SlotStart_Button.interactable = toggle;
-        if (AutoSpin_Button) AutoSpin_Button.interactable = toggle;
-        // if (Maxbet_button) Maxbet_button.interactable = toggle;
-        if (BetMinus_Button) BetMinus_Button.interactable = toggle;
-        if (BetPlus_Button) BetPlus_Button.interactable = toggle;
-
-    }
+  }
 
 }
