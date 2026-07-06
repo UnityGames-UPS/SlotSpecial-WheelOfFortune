@@ -12,5 +12,5 @@ jobs:
     with:
       s3_bucket: unity.build-prod
       s3_folder: SL-WOF
-      cloudfront_distribution_id: EVFPZ9ROHP45P
+      cloudfront_distribution_id: E1SPDAO62CBV8F
       invalidate_paths: "/SL-WOF/*"
