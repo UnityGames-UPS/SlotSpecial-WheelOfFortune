@@ -8620,7 +8620,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c6dee67c9fb64b7bbed44da112a7af7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TestToken: 9150709b650e472981ce95654daf50a4
+  TestToken: a36d20c690f844e09d5752c0588764b9
   JSManager: {fileID: 1674023574}
   slotManager: {fileID: 2046803210}
   gameManager: {fileID: 1278492944}
@@ -24574,6 +24574,8 @@ MonoBehaviour:
   BetCounter: 0
   betMultiplier: 9
   anticipationTeaserChance: 0.3
+  enableWinAnimDebug: 0
+  debugWinAmount: 100
 --- !u!4 &1278492945
 Transform:
   m_ObjectHideFlags: 0

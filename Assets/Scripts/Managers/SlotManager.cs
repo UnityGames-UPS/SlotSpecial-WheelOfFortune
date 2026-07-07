@@ -312,7 +312,7 @@ public class SlotManager : MonoBehaviour
     {
       Destroy(child.gameObject);
     }
-    TotalWin_text.text = "0";
+    TotalWin_text.text = "0.000";
   }
   //manage the Routine for spinning of the slots
 
@@ -421,6 +421,24 @@ public class SlotManager : MonoBehaviour
     // KillAllTweens();
   }
 
+  // Plays the third-column anticipation animation as a looping accent during the
+  // big/mega win popup (distinct from the one-shot reel-stop gate). No spin audio.
+  internal void PlayWinAnticipation(bool play)
+  {
+    if (thirdColAnticipationAnim == null) return;
+    if (play)
+    {
+      thirdColAnticipationAnim.doLoopAnimation = true;
+      thirdColAnticipationAnim.StopAnimation();   // reset so StartAnimation replays cleanly
+      thirdColAnticipationAnim.StartAnimation();
+    }
+    else
+    {
+      thirdColAnticipationAnim.StopAnimation();
+      thirdColAnticipationAnim.RestoreOriginalSprite(); // back to default reel bg
+    }
+  }
+
   private void StartAnticipation()
   {
     if (thirdColAnticipationAnim == null) return;
@@ -445,14 +463,10 @@ public class SlotManager : MonoBehaviour
   {
     for (int i = 0; i < slotmatrix.Count; i++)
     {
-
       for (int j = 0; j < slotmatrix[i].slotImages.Count; j++)
       {
-
         slotmatrix[i].slotImages[j].sprite = myImages[UnityEngine.Random.Range(1, myImages.Length)];
-
       }
-
     }
   }
 

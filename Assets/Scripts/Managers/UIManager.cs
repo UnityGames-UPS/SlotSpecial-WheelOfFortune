@@ -200,7 +200,7 @@ public class UIManager : MonoBehaviour
       if (Win_Text) Win_Text.text = initAmount.ToString("f3");
     });
 
-    Invoke(nameof(CloseWinPopUp), 4f);
+    Invoke(nameof(CloseWinPopUp), 5f);
   }
 
   void CloseWinPopUp()

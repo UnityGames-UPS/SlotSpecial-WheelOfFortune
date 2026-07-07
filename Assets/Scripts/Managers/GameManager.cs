@@ -47,6 +47,12 @@ public class GameManager : MonoBehaviour
   [Range(0f, 1f)]
   [SerializeField] private float anticipationTeaserChance = 0.4f;
 
+  [Header("Win Animation Debug")]
+  [Tooltip("When on, keys 1/2/3 trigger the Big/Huge/Mega win popup + anticipation without a socket result; key 4 interrupts.")]
+  [SerializeField] private bool enableWinAnimDebug = false;
+  [Tooltip("Sample win amount shown in the popup when debug-triggering.")]
+  [SerializeField] private double debugWinAmount = 100;
+
   private void Awake()
   {
     SlotStart_Button.onClick.AddListener(StartSpin);
@@ -74,6 +80,30 @@ public class GameManager : MonoBehaviour
     Turbo_Button.onClick.AddListener(() => { audioController.PlayButtonAudio(); ToggleTurboMode(); });
     // uIManager.Clos
 
+  }
+
+  private void Update()
+  {
+    if (!enableWinAnimDebug) return;
+
+    if (Input.GetKeyDown(KeyCode.Alpha1)) StartCoroutine(DebugWinRoutine(1));
+    else if (Input.GetKeyDown(KeyCode.Alpha2)) StartCoroutine(DebugWinRoutine(2));
+    else if (Input.GetKeyDown(KeyCode.Alpha3)) StartCoroutine(DebugWinRoutine(3));
+    else if (Input.GetKeyDown(KeyCode.Alpha4)) checkWin = false; // interrupt: releases the routine, which stops the anticipation
+  }
+
+  // Debug-only replica of the win branch in OnSpinEnd. Shows the Big/Huge/Mega popup
+  // (tier 1/2/3) and loops the third-column anticipation, without needing a socket result.
+  private IEnumerator DebugWinRoutine(int tier)
+  {
+    checkWin = true;
+    audioController.PlayWLAudio("win");
+    slotManager.PlayWinAnticipation(true);
+    uiManager.PopulateWin(tier, debugWinAmount);
+    yield return new WaitUntil(() => !checkWin);
+    slotManager.PlayWinAnticipation(false);
+    checkWin = false;
+    audioController.StopWLAaudio();
   }
 
   internal void ToggleTurboMode()
@@ -259,6 +289,10 @@ public class GameManager : MonoBehaviour
         Debug.Log(foundIndex);
         bonusManager.multipler = socketManager.initialData.bets[BetCounter];
 
+        // Give the player a beat to see column 3 land before the wheel panel opens
+        // (matches the 1s pause used on the gold-spin path below).
+        yield return new WaitForSeconds(1f);
+
         bonusManager.StartBonus(IsAutoSpin);
         audioController.playBgAudio("bonus");
 
@@ -308,9 +342,11 @@ public class GameManager : MonoBehaviour
         {
           checkWin = true;
           audioController.PlayWLAudio("win");
+          slotManager.PlayWinAnticipation(true);
           uiManager.PopulateWin(wintype, socketManager.resultData.payload.totalWin);
           Debug.Log($"checking, {checkWin}");
           yield return new WaitUntil(() => !checkWin);
+          slotManager.PlayWinAnticipation(false);
           checkWin = false;
           Debug.Log($"checking, {checkWin}");
           audioController.StopWLAaudio();
