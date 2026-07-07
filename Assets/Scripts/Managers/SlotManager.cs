@@ -434,9 +434,18 @@ public class SlotManager : MonoBehaviour
     }
     else
     {
-      thirdColAnticipationAnim.StopAnimation();
-      thirdColAnticipationAnim.RestoreOriginalSprite(); // back to default reel bg
+      ResetWinAnticipation();
     }
+  }
+
+  // Hard-stops the win anticipation loop and restores the default reel background.
+  // Called at the start of every spin so a still-looping win accent from the previous
+  // spin is cleared cleanly and can't bleed into / interrupt the new spin.
+  internal void ResetWinAnticipation()
+  {
+    if (thirdColAnticipationAnim == null) return;
+    thirdColAnticipationAnim.StopAnimation();
+    thirdColAnticipationAnim.RestoreOriginalSprite(); // back to default reel bg
   }
 
   private void StartAnticipation()

@@ -86,24 +86,24 @@ public class GameManager : MonoBehaviour
   {
     if (!enableWinAnimDebug) return;
 
-    if (Input.GetKeyDown(KeyCode.Alpha1)) StartCoroutine(DebugWinRoutine(1));
-    else if (Input.GetKeyDown(KeyCode.Alpha2)) StartCoroutine(DebugWinRoutine(2));
-    else if (Input.GetKeyDown(KeyCode.Alpha3)) StartCoroutine(DebugWinRoutine(3));
-    else if (Input.GetKeyDown(KeyCode.Alpha4)) checkWin = false; // interrupt: releases the routine, which stops the anticipation
+    if (Input.GetKeyDown(KeyCode.Alpha1)) DebugWin(1);
+    else if (Input.GetKeyDown(KeyCode.Alpha2)) DebugWin(2);
+    else if (Input.GetKeyDown(KeyCode.Alpha3)) DebugWin(3);
+    else if (Input.GetKeyDown(KeyCode.Alpha4)) // interrupt / hard reset (mirrors OnSpinStart)
+    {
+      slotManager.ResetWinAnticipation();
+      audioController.StopWLAaudio();
+    }
   }
 
   // Debug-only replica of the win branch in OnSpinEnd. Shows the Big/Huge/Mega popup
-  // (tier 1/2/3) and loops the third-column anticipation, without needing a socket result.
-  private IEnumerator DebugWinRoutine(int tier)
+  // (tier 1/2/3) and starts the looping third-column anticipation, without a socket result.
+  // The loop persists like in-game until reset (press 4, or the next real spin).
+  private void DebugWin(int tier)
   {
-    checkWin = true;
     audioController.PlayWLAudio("win");
     slotManager.PlayWinAnticipation(true);
     uiManager.PopulateWin(tier, debugWinAmount);
-    yield return new WaitUntil(() => !checkWin);
-    slotManager.PlayWinAnticipation(false);
-    checkWin = false;
-    audioController.StopWLAaudio();
   }
 
   internal void ToggleTurboMode()
@@ -242,6 +242,7 @@ public class GameManager : MonoBehaviour
 
       slotManager.StopGameAnimation();
       slotManager.WinningsAnim(false);
+      slotManager.ResetWinAnticipation(); // hard reset any looping win accent from the previous spin
       slotManager.ResetLinesAndWins();
       bool start = CompareBalance();
       ToggleButtonGrp(false);
@@ -336,20 +337,26 @@ public class GameManager : MonoBehaviour
       }
       else if (socketManager.resultData.payload.totalWin > 0)
       {
+        // Play the anticipation accent on ANY win (normal line win or big/mega). It loops
+        // until the next spin's hard reset (OnSpinStart), so it isn't cut off mid-celebration.
+        slotManager.PlayWinAnticipation(true);
         int wintype = CheckWinPopups(socketManager.resultData.payload.totalWin);
         // wintype=1;
         if (wintype > 0)
         {
           checkWin = true;
           audioController.PlayWLAudio("win");
-          slotManager.PlayWinAnticipation(true);
           uiManager.PopulateWin(wintype, socketManager.resultData.payload.totalWin);
           Debug.Log($"checking, {checkWin}");
           yield return new WaitUntil(() => !checkWin);
-          slotManager.PlayWinAnticipation(false);
           checkWin = false;
           Debug.Log($"checking, {checkWin}");
           audioController.StopWLAaudio();
+        }
+        else
+        {
+          // Normal win (below the big-win popup threshold): play the bonus win clip.
+          audioController.PlayWLAudio("bonuswin");
         }
 
         slotManager.WinningsAnim(true);
