@@ -105,6 +105,7 @@ public class UIManager : MonoBehaviour
   [SerializeField] private SocketIOManager socketManager;
   [SerializeField] private AudioController audioController;
   [SerializeField] private GameManager gameManager;
+  [SerializeField] private JSFunctCalls jsFunctCalls;
   internal Action PlayButtonAudio;
 
   internal Action<float, string> ToggleAudio;
@@ -113,6 +114,22 @@ public class UIManager : MonoBehaviour
   internal float currentCoin = 10f;
   private double selectedBet = 1;
   private int selectedBtnIndex;
+
+  private void Awake()
+  {
+    if (jsFunctCalls != null)
+      jsFunctCalls.RegisterVisibilityListener(gameObject.name);
+  }
+
+  // Called by the host page via SendMessage(gameObjectName, 'OnFocusChanged', value) —
+  // must stay public for Unity's SendMessage to reach it.
+  public void OnFocusChanged(string value)
+  {
+    bool focused = value == "1";
+    Debug.Log("UNITY FOCUS CHANGED: " + value + " (focused: " + focused + ")");
+    audioController?.SetMuteAll(!focused);
+    socketManager?.HandleFocusChange(focused);
+  }
 
   private void Start()
   {

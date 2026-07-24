@@ -94,19 +94,29 @@ public class AudioController : MonoBehaviour
 
     private void OnApplicationFocus(bool focus)
     {
-        if (!focus)
-        {
+        SetMuteAll(!focus);
+    }
 
-            bg_adudio.Pause();
-            audioPlayer_wl.Pause();
-            audioPlayer_button.Pause();
+    // Forces every channel muted on blur; on focus, restores each channel to the user's
+    // last chosen volume (ToggleMute keeps volume set even while muted), never force-unmuting
+    // a channel the user had turned down.
+    internal void SetMuteAll(bool mute)
+    {
+        if (mute)
+        {
+            bg_adudio.mute = true;
+            audioPlayer_wl.mute = true;
+            audioPlayer_button.mute = true;
+            audioPlayer_Spin.mute = true;
+            if (audioPlayer_thirdCol) audioPlayer_thirdCol.mute = true;
         }
         else
         {
-            if (!bg_adudio.mute) bg_adudio.UnPause();
-            if (!audioPlayer_wl.mute) audioPlayer_wl.UnPause();
-            if (!audioPlayer_button.mute) audioPlayer_button.UnPause();
-
+            bg_adudio.mute = bg_adudio.volume < 0.1f;
+            audioPlayer_wl.mute = audioPlayer_wl.volume < 0.1f;
+            audioPlayer_button.mute = audioPlayer_button.volume < 0.1f;
+            audioPlayer_Spin.mute = audioPlayer_Spin.volume < 0.1f;
+            if (audioPlayer_thirdCol) audioPlayer_thirdCol.mute = audioPlayer_thirdCol.volume < 0.1f;
         }
     }
 

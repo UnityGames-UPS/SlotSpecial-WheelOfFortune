@@ -6097,6 +6097,7 @@ MonoBehaviour:
   socketManager: {fileID: 500036492}
   audioController: {fileID: 4884499504835516836}
   gameManager: {fileID: 1278492944}
+  jsFunctCalls: {fileID: 1674023574}
 --- !u!1 &379363302
 GameObject:
   m_ObjectHideFlags: 0
@@ -8620,7 +8621,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c6dee67c9fb64b7bbed44da112a7af7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TestToken: a36d20c690f844e09d5752c0588764b9
+  TestToken: 2b226b1fc3ef44d5bc43ad32b1862d67
   JSManager: {fileID: 1674023574}
   slotManager: {fileID: 2046803210}
   gameManager: {fileID: 1278492944}
