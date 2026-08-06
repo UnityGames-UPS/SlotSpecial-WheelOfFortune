@@ -475,6 +475,13 @@ public class GameManager : MonoBehaviour
   }
 
 
+  internal void SyncBalance(double newBalance)
+  {
+    currentBalance = newBalance;
+    slotManager.SetBalanceDisplay(newBalance);
+    CompareBalance();
+  }
+
   private bool CompareBalance()
   {
     if (currentBalance < currentTotalBet)

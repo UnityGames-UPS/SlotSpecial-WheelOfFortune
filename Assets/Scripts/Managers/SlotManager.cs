@@ -332,6 +332,12 @@ public class SlotManager : MonoBehaviour
     }
   }
 
+  internal void SetBalanceDisplay(double balance)
+  {
+    BalanceTween?.Kill();
+    if (Balance_text) Balance_text.text = balance.ToString("f3");
+  }
+
   internal void UpdatePlayerData(bool result)
   {
     // DOTween.Kill(Balance_text);
