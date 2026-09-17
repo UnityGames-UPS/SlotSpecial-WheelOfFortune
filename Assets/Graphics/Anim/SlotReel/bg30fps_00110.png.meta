@@ -1,7 +1,10 @@
 fileFormatVersion: 2
 guid: 68a1b29d9c15c4e66aea5782401ba2a6
 TextureImporter:
-  internalIDToNameTable: []
+  internalIDToNameTable:
+  - first:
+      213: -8841972599184035232
+    second: bg30fps_00110_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -121,7 +124,29 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: bg30fps_00110_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 1404
+        height: 648
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 062f5ef84c00b4580800000000000000
+      internalID: -8841972599184035232
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []

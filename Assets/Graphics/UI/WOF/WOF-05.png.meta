@@ -1,7 +1,10 @@
 fileFormatVersion: 2
 guid: a1320717fcc194a3780e70cf1d1509f2
 TextureImporter:
-  internalIDToNameTable: []
+  internalIDToNameTable:
+  - first:
+      213: 3914670717582897698
+    second: WOF-05_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -108,7 +111,29 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: WOF-05_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 1630
+        height: 1157
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 222f62ed644b35630800000000000000
+      internalID: 3914670717582897698
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
